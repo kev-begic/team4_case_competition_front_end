@@ -145,17 +145,18 @@ class MarketedSearch extends Component {
         this.setState({
             search_state : updatedSearchState
         });
-        let movies_array = this.populateTopMoviesFromSearch();
+        let movies_array = [...this.state.top_n_movies ]
+        movies_array = this.populateTopMoviesFromSearch();
         this.setState({
-            top_n_movies : movies_array
+          top_n_movies : movies_array
         });
-        console.log(movies_array);
+        console.log(this.state.top_n_movies);
     }
 
     // based on user search query, get 10 matching movies/shows to display
     populateTopMoviesFromSearch() {
       // matches user_query to all titles in the ALL_CONTENT array
-      let exact_matches = ALL_CONTENT.filter(movie => movie.title.includes(this.state.search_state.user_query));
+      let exact_matches = ALL_CONTENT.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
       if (exact_matches.length < 10) {
         let query_array = this.state.search_state.user_query.split(" ");
         return this.getMoreMatchingTitles(exact_matches, query_array);
@@ -172,13 +173,18 @@ class MarketedSearch extends Component {
         let join_query = query_array.join(" ");
         let just_titles = exact_matches.map(movie => movie.title);
         let filtered_out_matches = ALL_CONTENT.filter(movie => !just_titles.includes(movie.title));
-        let new_matches = filtered_out_matches.filter(movie => movie.title.includes(join_query));
+        let new_matches = filtered_out_matches.filter(movie => movie.title.toLowerCase().includes(join_query.toLowerCase()));
         // combine original matches with new matches
         let joined_array = exact_matches.concat(new_matches);
         // shorten the search query by one term
         query_array.pop();
         return this.getMoreMatchingTitles(joined_array, query_array);
       }
+    }
+
+    // updates top streaming platform for user based on search results
+    findTopStreamingPlatform() {
+
     }
 
     render() {
