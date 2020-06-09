@@ -152,7 +152,6 @@ class MarketedSearch extends Component {
           top_n_movies : movies_array,
           show_this_advertisement : top_stream
         });
-        console.log(top_stream);
     }
 
     movieClickedHandler = (event) => {
