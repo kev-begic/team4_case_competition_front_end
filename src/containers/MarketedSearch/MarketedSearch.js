@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-
 import Aux from '../../hoc/Aux/Aux'
 import SearchFunction from '../../components/SearchFunction/SearchFunction';
-import Listings from '../../components/Listings/Listings';
 import Advertisement from '../../components/Advertisement/Advertisement';
 
 // Array of all movies and shows required for initial search
@@ -124,6 +122,7 @@ class MarketedSearch extends Component {
         }
     };
 
+    // Updates search_state.user_query 
     searchQueryChangedHandler = (event) => {
         const query = event.target.value;
         let updatedSearchState = {
@@ -136,12 +135,14 @@ class MarketedSearch extends Component {
         });
     };
 
+    // Method to allow Enter-Key to update search_state.user_query
     pressEnterHandler = ( event ) => {
-        if (event.key == 'Enter') {
+        if (event.key === 'Enter') {
             this.searchPerformedChangedHandler();
         }
     }
 
+    // Clears search_state
     resetSearchState = () => {
         let updatedSearchState = {
             ...this.state.search_state
@@ -153,8 +154,8 @@ class MarketedSearch extends Component {
         return updatedSearchState;
     }
 
+    // Clears clicked_movie_state
     resetMovieState = () => {
-
         let updatedMovieState = {
             ...this.state.clicked_movie_state
         };
@@ -167,6 +168,7 @@ class MarketedSearch extends Component {
         return updatedMovieState;
     }
 
+    // Updates search_state on user button click of enter
     searchPerformedChangedHandler = () => {
         let updatedSearchState = {
             ...this.state.search_state
@@ -182,8 +184,10 @@ class MarketedSearch extends Component {
         });
 
         console.log(this.state);
+        this.sendStateToBackEnd();
     }
 
+    // Modified listing for movie/show clicked;; modify for Carrie implementation
     clickedListingHandler = ( event ) => {
         const newListingID = event.currentTarget.getAttribute('id');
         let updatedMovieState = {
@@ -210,6 +214,19 @@ class MarketedSearch extends Component {
         });
     }
 
+    // Send POST request to back-end
+    sendStateToBackEnd() {
+      console.log('sending state');
+    }
+
+    componentDidMount() {
+      window.addEventListener("beforeunload", this.sendStateToBackEnd);
+    }
+    
+    componentWillUnmount() {
+      window.removeEventListener("beforeunload", this.sendStateToBackEnd);
+    }
+
     render() {
         return( 
           <Aux>
@@ -220,10 +237,6 @@ class MarketedSearch extends Component {
                 searchChangeHandler={this.searchQueryChangedHandler} 
                 searchPerformedHandler={this.searchPerformedChangedHandler}
                 pressEnter={this.pressEnterHandler} />
-            <Listings
-                listings={ this.state.clicked_movie_state.movie_clicked ? 
-                    this.state.clicked_movie_state.movies_on_platform : ALL_CONTENT}
-                listingClicked={this.clickedListingHandler} /> 
           </Aux>
         );
     }
