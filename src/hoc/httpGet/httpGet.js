@@ -1,7 +1,6 @@
 // const fetch = require("node-fetch")
 
 function httpGet(url) {
-    console.log('here', url)
     fetch(url)
     .then((resp) => resp.json())
     .then(function(data) {

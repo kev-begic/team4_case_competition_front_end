@@ -1,3 +1,5 @@
+// const fetch = require("node-fetch")
+
 function httpPost(url, payload) {
     const options = {
         method: 'POST',
