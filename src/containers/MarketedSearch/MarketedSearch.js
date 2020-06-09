@@ -206,11 +206,38 @@ class MarketedSearch extends Component {
         return updatedMovieState;
       }
 
+    searchPerformedChangedHandler = (event) => {
+        let updatedSearchState = {
+            ...this.state.search_state
+        };
+        updatedSearchState.is_search_performed = true;
+        console.log("clicked button")
+        console.log(updatedSearchState.user_query);
+        this.setState({
+            search_state : updatedSearchState
+        });
+        let movies_array = [...this.state.top_n_movies ]
+        movies_array = this.populateTopMoviesFromSearch();
+        this.setState({
+          top_n_movies : movies_array
+        });
+    }
+
+    movieClickedHandler = (event) => {
+      console.log("here");
+        let updatedMovieClickedState = {
+            ...this.state.clicked_movie_state
+        };
+        updatedMovieClickedState.clicked_movie_id = 7;
+        this.setState({
+            clicked_movie_id : updatedMovieClickedState
+        });
+    };
 
     // based on user search query, get 10 matching movies/shows to display
     populateTopMoviesFromSearch() {
       // matches user_query to all titles in the ALL_CONTENT array
-      let exact_matches = ALL_CONTENT.filter(movie => movie.title.includes(this.state.search_state.user_query));
+      let exact_matches = ALL_CONTENT.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
       if (exact_matches.length < 10) {
         let query_array = this.state.search_state.user_query.split(" ");
         return this.getMoreMatchingTitles(exact_matches, query_array);
@@ -227,40 +254,13 @@ class MarketedSearch extends Component {
         let join_query = query_array.join(" ");
         let just_titles = exact_matches.map(movie => movie.title);
         let filtered_out_matches = ALL_CONTENT.filter(movie => !just_titles.includes(movie.title));
-        let new_matches = filtered_out_matches.filter(movie => movie.title.includes(join_query));
+        let new_matches = filtered_out_matches.filter(movie => movie.title.toLowerCase().includes(join_query.toLowerCase()));
         // combine original matches with new matches
         let joined_array = exact_matches.concat(new_matches);
         // shorten the search query by one term
         query_array.pop();
         return this.getMoreMatchingTitles(joined_array, query_array);
       }
-    }
-
-      // Modified listing for movie/show clicked;; modify for Carrie implementation
-      clickedListingHandler = ( event ) => {
-        const newListingID = event.currentTarget.getAttribute('id');
-        let updatedMovieState = {
-            ...this.state.clicked_movie_state
-        };
-        updatedMovieState.movie_clicked = true;
-        updatedMovieState.clicked_movie_id = newListingID;
-
-        // TODO: Given newListingID, find item in ALL_CONTENT 
-        // setting top_streaming_platform to 1) the single platform 2) whatever playform we rank highest
-        // && find 3 movies related to that platform/movie
-
-        // _TESTING_ CODE
-        updatedMovieState.top_streaming_platform = "hbo";
-        updatedMovieState.movies_on_platform = clicked_test; // not actual functionality
-        // EO_TESTING_ CODE
-
-        console.log("updated movie state")
-        console.log(updatedMovieState);
-
-        this.setState({
-            clicked_movie_state : updatedMovieState,
-            search_state : this.resetSearchState()
-        });
     }
 
     // Updates search_state.user_query 
@@ -311,19 +311,24 @@ class MarketedSearch extends Component {
         console.log(this.state.top_n_movies);
     }
 
+    // updates top streaming platform for user based on search results
+    findTopStreamingPlatform() {
+
+    }
+
     render() {
         return(
             <Aux>
               <Advertisement 
                 streamingPlatform={this.state.clicked_movie_state.top_streaming_platform}/>
-            <SearchFunction 
-                searchState={this.state.search_state.user_query} 
-                searchChangeHandler={this.searchQueryChangedHandler} 
-                searchPerformedHandler={this.searchPerformedChangedHandler}
-                pressEnter={this.pressEnterHandler} />
-                {/* change to top n movie state */}
-              <Results 
-                results={this.state.top_n_movies} />
+              <SearchFunction
+                  searchState={this.state.search_state.user_query}
+                  searchChangeHandler={this.searchQueryChangedHandler}
+                  searchPerformedHandler={this.searchPerformedChangedHandler}/>
+              <Results
+                  results={this.state.top_n_movies}
+                  resultsClickedHandler={this.movieClickedHandler}
+                />
             </Aux>
         );
     }
