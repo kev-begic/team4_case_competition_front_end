@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Aux from '../../hoc/Aux/Aux'
 import SearchFunction from '../../components/SearchFunction/SearchFunction';
+import Results from '../../components/results/Results'
 
 // Array of all movies and shows required for initial search
 const ALL_CONTENT = [{
@@ -115,12 +116,11 @@ class MarketedSearch extends Component {
                     searchState={this.state.search_state.user_query} 
                     searchChangeHandler={this.searchQueryChangedHandler} 
                     searchPerformedHandler={this.searchPerformedChangedHandler}/>
-                {/*
-                    if (!movieClicked)
-                        show top_n_movies
-                    else 
-                        show clicked_movie_id / clicked_movie_state 
-                 */}
+                
+                {/* change to top n movie state */}
+                <Results 
+                    results={ALL_CONTENT} 
+                 />
 
                 {/*
                     Data Analytics by pulling from our own API
