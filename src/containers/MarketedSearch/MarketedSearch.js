@@ -143,10 +143,13 @@ class MarketedSearch extends Component {
         console.log("clicked button")
         console.log(updatedSearchState.user_query);
         this.setState({
-            search_state : updatedSearchState,
-            top_n_movies : this.populateTopMoviesFromSearch()
+            search_state : updatedSearchState
         });
-        console.log(this.state.top_n_movies);
+        let movies_array = this.populateTopMoviesFromSearch();
+        this.setState({
+            top_n_movies : movies_array
+        });
+        console.log(movies_array);
     }
 
     // based on user search query, get 10 matching movies/shows to display
@@ -171,10 +174,10 @@ class MarketedSearch extends Component {
         let filtered_out_matches = ALL_CONTENT.filter(movie => !just_titles.includes(movie.title));
         let new_matches = filtered_out_matches.filter(movie => movie.title.includes(join_query));
         // combine original matches with new matches
-        exact_matches.push(new_matches);
+        let joined_array = exact_matches.concat(new_matches);
         // shorten the search query by one term
         query_array.pop();
-        return this.getMoreMatchingTitles(exact_matches, query_array);
+        return this.getMoreMatchingTitles(joined_array, query_array);
       }
     }
 
