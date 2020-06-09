@@ -119,7 +119,7 @@ class MarketedSearch extends Component {
                 
                 {/* change to top n movie state */}
                 <Results 
-                    results={ALL_CONTENT} 
+                    results={this.state.top_n_movies} 
                  />
 
                 {/*
