@@ -59,7 +59,49 @@ const ALL_CONTENT = [{
     "popularity": 140.641,
     "overview": "In the wake of his dramatic escape from captivity, Jesse Pinkman must come to terms with his past in order to forge some kind of future."
 
-}];
+  },
+
+  {
+    "title": "Inner",
+    "release_date": "2019-10-11",
+    "rating": "NR",
+    "streaming_platform": [
+      "netflix"
+    ],
+    "production_companies": [
+      "Sony Pictures Television",
+      "High Bridge Productions",
+      "Gran Via Productions"
+    ],
+    "imdb": "tt9243946",
+    "vote_count": 580,
+    "vote_average": 7.3,
+    "original_language": "en",
+    "popularity": 140.641,
+    "overview": "In the wake of his dramatic escape from captivity, Jesse Pinkman must come to terms with his past in order to forge some kind of future."
+
+  },
+
+  {
+    "title": "Park",
+    "release_date": "2019-10-11",
+    "rating": "NR",
+    "streaming_platform": [
+      "netflix"
+    ],
+    "production_companies": [
+      "Sony Pictures Television",
+      "High Bridge Productions",
+      "Gran Via Productions"
+    ],
+    "imdb": "tt9243946",
+    "vote_count": 580,
+    "vote_average": 7.3,
+    "original_language": "en",
+    "popularity": 140.641,
+    "overview": "In the wake of his dramatic escape from captivity, Jesse Pinkman must come to terms with his past in order to forge some kind of future."
+
+  }];
 
 class MarketedSearch extends Component {
 
@@ -88,7 +130,6 @@ class MarketedSearch extends Component {
             ...this.state.search_state
         };
         updatedSearchState.user_query = query;
-        console.log(updatedSearchState.user_query);
         this.setState({
             search_state : updatedSearchState
         });
@@ -102,22 +143,42 @@ class MarketedSearch extends Component {
         console.log("clicked button")
         console.log(updatedSearchState.user_query);
         this.setState({
-            search_state : updatedSearchState
+            search_state : updatedSearchState,
+            top_n_movies : this.populateTopMoviesFromSearch()
         });
+        console.log(this.state.top_n_movies);
     }
 
+    // based on user search query, get 10 matching movies/shows to display
     populateTopMoviesFromSearch() {
-      const just_titles_arr = ALL_CONTENT.map(movie => movie.title);
-      const exact_matches = just_titles_arr.filter(title =>
-        title.includes(this.state.search_state.user_query));
-        console.log(exact_matches);
-      // this.setState({
-      //   top_n_movies : exact_matches
-      // });
+      // matches user_query to all titles in the ALL_CONTENT array
+      let exact_matches = ALL_CONTENT.filter(movie => movie.title.includes(this.state.search_state.user_query));
+      if (exact_matches.length < 10) {
+        let query_array = this.state.search_state.user_query.split(" ");
+        return this.getMoreMatchingTitles(exact_matches, query_array);
+      } else {
+        return exact_matches;
+      }
+    }
+
+    // if not enough matches, filter on less words in the query - recur until 10 matches found
+    getMoreMatchingTitles(exact_matches, query_array) {
+      if (exact_matches.lenght >= 10 | query_array.length === 0) {
+        return exact_matches;
+      } else {
+        let join_query = query_array.join(" ");
+        let just_titles = exact_matches.map(movie => movie.title);
+        let filtered_out_matches = ALL_CONTENT.filter(movie => !just_titles.includes(movie.title));
+        let new_matches = filtered_out_matches.filter(movie => movie.title.includes(join_query));
+        // combine original matches with new matches
+        exact_matches.push(new_matches);
+        // shorten the search query by one term
+        query_array.pop();
+        return this.getMoreMatchingTitles(exact_matches, query_array);
+      }
     }
 
     render() {
-        this.populateTopMoviesFromSearch();
         return(
             <Aux>
                 <SearchFunction
