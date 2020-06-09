@@ -46,7 +46,7 @@ const ALL_CONTENT = [{
     "release_date": "2019-10-11",
     "rating": "NR",
     "streaming_platform": [
-      "netflix"
+      "netflix", "hbo"
     ],
     "production_companies": [
       "Sony Pictures Television",
@@ -67,7 +67,7 @@ const ALL_CONTENT = [{
     "release_date": "2019-10-11",
     "rating": "NR",
     "streaming_platform": [
-      "netflix"
+      "netflix", "amazon_prime"
     ],
     "production_companies": [
       "Sony Pictures Television",
@@ -114,7 +114,7 @@ class MarketedSearch extends Component {
         show_this_advertisement: "id_for_advertisement",
 
         search_state : {
-            user_query: "updated for each character user types",
+            user_query: "Search",
             is_search_performed: false
         },
 
@@ -143,15 +143,26 @@ class MarketedSearch extends Component {
         updatedSearchState.is_search_performed = true;
         console.log("clicked button")
         console.log(updatedSearchState.user_query);
-        this.setState({
-            search_state : updatedSearchState
-        });
-        let movies_array = [...this.state.top_n_movies ]
+        let movies_array = [...this.state.top_n_movies]
         movies_array = this.populateTopMoviesFromSearch();
+        let top_stream = this.show_this_advertisement;
+        top_stream = this.findTopStreamingPlatform(movies_array);
         this.setState({
-          top_n_movies : movies_array
+          search_state : updatedSearchState,
+          top_n_movies : movies_array,
+          show_this_advertisement : top_stream
         });
     }
+
+    movieClickedHandler = (event) => {
+      let updatedMovieClickedState = {
+          ...this.state.clicked_movie_state
+      };
+      updatedMovieClickedState.clicked_movie_id = 7;
+      this.setState({
+          clicked_movie_id : updatedMovieClickedState
+      });
+    };
 
     // based on user search query, get 10 matching movies/shows to display
     populateTopMoviesFromSearch() {
@@ -183,8 +194,26 @@ class MarketedSearch extends Component {
     }
 
     // updates top streaming platform for user based on search results
-    findTopStreamingPlatform() {
-
+    findTopStreamingPlatform(movies_array) {
+      let platform_map = new Map();
+      platform_map.set("hbo", 0);
+      platform_map.set("amazon_prime", 0);
+      platform_map.set("netflix", 0);
+      for (var movie of movies_array) {
+        let platform_array = movie.streaming_platform;
+        for (var platform of platform_array){
+          let curr_total = platform_map.get(platform);
+          platform_map.set(platform, curr_total + 1);
+        }
+      }
+      console.log(platform_map);
+      var get_entries = platform_map.entries();
+      let highest_tally = "hbo";
+      for(var ele of get_entries)
+        if (ele[1] > platform_map.get(highest_tally)) {
+          highest_tally = ele[0];
+        }
+        return highest_tally;
     }
 
     render() {
@@ -194,10 +223,11 @@ class MarketedSearch extends Component {
                     searchState={this.state.search_state.user_query}
                     searchChangeHandler={this.searchQueryChangedHandler}
                     searchPerformedHandler={this.searchPerformedChangedHandler}/>
-                
+
                 {/* change to top n movie state */}
-                <Results 
-                    results={this.state.top_n_movies} 
+                <Results
+                    results={this.state.top_n_movies}
+                    resultsClickedHandler={this.movieClickedHandler}
                  />
 
                 {/*
