@@ -104,22 +104,31 @@ class MarketedSearch extends Component {
         this.setState({
             search_state : updatedSearchState
         });
+    }
 
-        // populate top_n_movies
+    populateTopMoviesFromSearch() {
+      const just_titles_arr = ALL_CONTENT.map(movie => movie.title);
+      const exact_matches = just_titles_arr.filter(title =>
+        title.includes(this.state.search_state.user_query));
+        console.log(exact_matches);
+      // this.setState({
+      //   top_n_movies : exact_matches
+      // });
     }
 
     render() {
-        return( 
+        this.populateTopMoviesFromSearch();
+        return(
             <Aux>
-                <SearchFunction 
-                    searchState={this.state.search_state.user_query} 
-                    searchChangeHandler={this.searchQueryChangedHandler} 
+                <SearchFunction
+                    searchState={this.state.search_state.user_query}
+                    searchChangeHandler={this.searchQueryChangedHandler}
                     searchPerformedHandler={this.searchPerformedChangedHandler}/>
                 {/*
                     if (!movieClicked)
                         show top_n_movies
-                    else 
-                        show clicked_movie_id / clicked_movie_state 
+                    else
+                        show clicked_movie_id / clicked_movie_state
                  */}
 
                 {/*
