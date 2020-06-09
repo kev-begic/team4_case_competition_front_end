@@ -1,10 +1,11 @@
+// const fetch = require("node-fetch")
+
 function httpGet(url) {
+    console.log('here', url)
     fetch(url)
     .then((resp) => resp.json())
     .then(function(data) {
-        let obj = data.results;
-        console.log(obj)
-        return obj
+        return data
     })
     .catch(function(error) {
         console.log(error);
@@ -12,3 +13,5 @@ function httpGet(url) {
 };
 
 export default httpGet;
+
+// httpGet("https://casecomp.konnectrv.io/movie")

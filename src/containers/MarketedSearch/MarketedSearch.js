@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 
 import Aux from '../../hoc/Aux/Aux'
 import SearchFunction from '../../components/SearchFunction/SearchFunction';
-import getMovie from '../../api/getMovie'
+import getMovie from '../../api/get/getMovie'
+import getMovieID from '../../api/get/getMovieID'
+import getShow from '../../api/get/getShow'
+import getShowID from '../../api/get/getShowID'
+import postUserID from '../../api/post/postUserID'
 
 // Array of all movies and shows required for initial search
 const ALL_CONTENT = [{
@@ -83,6 +87,15 @@ class MarketedSearch extends Component {
         }
     };
 
+    componentDidMount() {
+        let all_movies = getMovie();
+        let all_shows = getShow();
+        const p = {
+            "UserId": "1440"
+        }
+        postUserID(p)
+    };
+    
     searchQueryChangedHandler = (event) => {
         const query = event.target.value;
         let updatedSearchState = {
@@ -110,8 +123,6 @@ class MarketedSearch extends Component {
     }
 
     render() {
-        const data = getMovie();
-        console.log(data);
         return( 
             <Aux>
                 <SearchFunction 
