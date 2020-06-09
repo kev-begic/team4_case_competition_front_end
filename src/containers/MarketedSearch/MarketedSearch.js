@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Aux from '../../hoc/Aux/Aux'
 import SearchFunction from '../../components/SearchFunction/SearchFunction';
+import getMovie from '../../api/getMovie'
 
 // Array of all movies and shows required for initial search
 const ALL_CONTENT = [{
@@ -109,6 +110,8 @@ class MarketedSearch extends Component {
     }
 
     render() {
+        const data = getMovie();
+        console.log(data);
         return( 
             <Aux>
                 <SearchFunction 
