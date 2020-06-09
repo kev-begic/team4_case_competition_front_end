@@ -153,6 +153,17 @@ class MarketedSearch extends Component {
         });
     }
 
+    movieClickedHandler = (event) => {
+      console.log("here");
+        let updatedMovieClickedState = {
+            ...this.state.clicked_movie_state
+        };
+        updatedMovieClickedState.clicked_movie_id = 7;
+        this.setState({
+            clicked_movie_id : updatedMovieClickedState
+        });
+    };
+
     // based on user search query, get 10 matching movies/shows to display
     populateTopMoviesFromSearch() {
       // matches user_query to all titles in the ALL_CONTENT array
@@ -194,10 +205,11 @@ class MarketedSearch extends Component {
                     searchState={this.state.search_state.user_query}
                     searchChangeHandler={this.searchQueryChangedHandler}
                     searchPerformedHandler={this.searchPerformedChangedHandler}/>
-                
+
                 {/* change to top n movie state */}
-                <Results 
-                    results={this.state.top_n_movies} 
+                <Results
+                    results={this.state.top_n_movies}
+                    // resultsClickedHandler={this.movieClickedHandler}
                  />
 
                 {/*

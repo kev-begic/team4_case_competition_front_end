@@ -8,11 +8,15 @@ import SingleShow from './SingleResult/SingleShow';
 let fillTopTen = ( array ) => {
     console.log("called");
     const result = [];
-    for(const [index, value] of array.entries()){
+    let num = 10;
+    if (array.length < 10) {
+      let num = array.length
+    }
+    for(const [index, value] of array.slice(0, num).entries()){
         if("title" in value){
-            result.push(<SingleMovie key={value.imdb} movie={value} />);
+            result.push(<SingleMovie key={Math.random()} movie={value} resultsClickedHandler={value.resultsClickedHandler}/>);
         } else{
-            result.push(<SingleShow key={value.imdb} show={value} />);
+            result.push(<SingleShow key={Math.random()} show={value} />);
         }
     }
     console.log(result);
@@ -20,7 +24,7 @@ let fillTopTen = ( array ) => {
         <div>
             {result}
         </div>
-            
+
     );
 }
 
