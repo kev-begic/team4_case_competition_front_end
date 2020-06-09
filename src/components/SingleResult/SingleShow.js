@@ -6,8 +6,6 @@ import Aux from '../../hoc/Aux/Aux';
 
 
 const singleShow = ( props ) => (
-
-
     <Aux>
         <div 
             type="text"
@@ -15,9 +13,17 @@ const singleShow = ( props ) => (
             >
             <h1>{props.show.title}</h1>
             <p>Type: TV Show</p>
-            <p>Streaming: {props.show.streaming_platform}</p>
+            <p>Streaming: {formatList(props.show.streaming_platform)}</p>
             </div>
     </Aux>
 );
+
+function formatList( list ) {
+    return (
+        <ul>
+        {list.map(item => <li>{item}</li>)}
+        </ul>
+    );
+  }
 
 export default singleShow;

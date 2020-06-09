@@ -6,8 +6,6 @@ import Aux from '../../hoc/Aux/Aux';
 
 
 const singleMovie = ( props ) => (
-
-
     <Aux>
         <div 
             type="text"
@@ -15,9 +13,17 @@ const singleMovie = ( props ) => (
             >
             <h1>{props.movie.title} ({props.movie.release_date.substring(0, 4)})</h1>
             <p>Type: Movie</p>
-            <p>Streaming: {props.movie.streaming_platform}</p>
+            <p>Streaming: {formatList(props.movie.streaming_platform)}</p>
             </div>
     </Aux>
 );
+
+function formatList( list ) {
+    return (
+        <ul>
+        {list.map(item => <li>{item}</li>)}
+        </ul>
+    );
+  }
 
 export default singleMovie;
