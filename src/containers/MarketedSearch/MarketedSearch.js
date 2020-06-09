@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Aux from '../../hoc/Aux/Aux'
 import SearchFunction from '../../components/SearchFunction/SearchFunction';
+import Results from '../../components/results/Results'
 
 // Array of all movies and shows required for initial search
 const ALL_CONTENT = [{
@@ -149,7 +150,9 @@ class MarketedSearch extends Component {
         this.setState({
             top_n_movies : movies_array
         });
+        console.log("movies coming");
         console.log(movies_array);
+        console.log(this.state.top_n_movies);
     }
 
     // based on user search query, get 10 matching movies/shows to display
@@ -188,12 +191,11 @@ class MarketedSearch extends Component {
                     searchState={this.state.search_state.user_query}
                     searchChangeHandler={this.searchQueryChangedHandler}
                     searchPerformedHandler={this.searchPerformedChangedHandler}/>
-                {/*
-                    if (!movieClicked)
-                        show top_n_movies
-                    else
-                        show clicked_movie_id / clicked_movie_state
-                 */}
+                
+                {/* change to top n movie state */}
+                <Results 
+                    results={this.state.top_n_movies} 
+                 />
 
                 {/*
                     Data Analytics by pulling from our own API
