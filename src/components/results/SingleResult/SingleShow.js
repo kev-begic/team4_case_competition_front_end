@@ -10,7 +10,6 @@ const singleShow = ( props ) => (
         <div 
             type="text"
             className={classes.box}
-            onClick={props.listingHandler}
         >
             <h1>{props.show.title}</h1>
             <p>Type: TV Show</p>

@@ -12,13 +12,11 @@ let fillTopTen = ( array, clickList ) => {
         if("title" in value){
             result.push(<SingleMovie 
                 key={value.imdb} 
-                movie={value} 
-                listingHandler={clickList}/>);
+                movie={value}/>);
         } else{
             result.push(<SingleShow 
                 key={value.imdb} 
-                show={value}
-                listingHandler={clickList}/>);
+                show={value}/>);
         }
     }
     console.log(result);

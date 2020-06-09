@@ -10,7 +10,6 @@ const singleMovie = ( props ) => (
         <div 
             type="text"
             className={classes.box}
-            onClick={props.listingHandler}
         >
             <h1>{props.movie.title} ({props.movie.release_date.substring(0, 4)})</h1>
             <p>Type: Movie</p>

@@ -322,10 +322,8 @@ class MarketedSearch extends Component {
                 searchPerformedHandler={this.searchPerformedChangedHandler}
                 pressEnter={this.pressEnterHandler} />
                 {/* change to top n movie state */}
-            <Results 
-              results={ this.state.clicked_movie_state.movie_clicked ?
-                  clicked_test : this.state.top_n_movies } 
-              clickList = { this.clickedListingHandler} />
+              <Results 
+                results={this.state.top_n_movies} />
             </Aux>
         );
     }
