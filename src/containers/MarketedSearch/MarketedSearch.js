@@ -167,7 +167,9 @@ class MarketedSearch extends Component {
     };
 
     // Send POST request to back-end
-    sendStateToBackEnd() {
+    sendPostState() {
+      // call getPostState
+      // send getPostState
       console.log('sending state');
     }
 
@@ -324,7 +326,8 @@ class MarketedSearch extends Component {
               <SearchFunction
                   searchState={this.state.search_state.user_query}
                   searchChangeHandler={this.searchQueryChangedHandler}
-                  searchPerformedHandler={this.searchPerformedChangedHandler}/>
+                  searchPerformedHandler={this.searchPerformedChangedHandler}
+                  pressEnter={this.pressEnterHandler} />
               <Results
                   results={this.state.top_n_movies}
                   resultsClickedHandler={this.movieClickedHandler}
