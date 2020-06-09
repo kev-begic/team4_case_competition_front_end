@@ -5,14 +5,20 @@ import SingleShow from './SingleResult/SingleShow';
 
 
 
-let fillTopTen = ( array ) => {
+let fillTopTen = ( array, clickList ) => {
     console.log("called");
     const result = [];
     for(const [index, value] of array.entries()){
         if("title" in value){
-            result.push(<SingleMovie key={value.imdb} movie={value} />);
+            result.push(<SingleMovie 
+                key={value.imdb} 
+                movie={value} 
+                listingHandler={clickList}/>);
         } else{
-            result.push(<SingleShow key={value.imdb} show={value} />);
+            result.push(<SingleShow 
+                key={value.imdb} 
+                show={value}
+                listingHandler={clickList}/>);
         }
     }
     console.log(result);
@@ -24,7 +30,7 @@ let fillTopTen = ( array ) => {
     );
 }
 
-const results = ( props ) => {return(fillTopTen(props.results))};
+const results = ( props ) => {return(fillTopTen(props.results, props.clickList))};
 
 
 export default results;

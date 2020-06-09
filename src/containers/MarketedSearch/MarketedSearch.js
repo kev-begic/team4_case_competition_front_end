@@ -180,7 +180,6 @@ class MarketedSearch extends Component {
       window.removeEventListener("beforeunload", this.sendStateToBackEnd);
     }
 
-
     // Clears search_state
     resetSearchState = () => {
       let updatedSearchState = {
@@ -193,61 +192,20 @@ class MarketedSearch extends Component {
       return updatedSearchState;
     }   
 
-  // Clears clicked_movie_state
-  resetMovieState = () => {
-      let updatedMovieState = {
-          ...this.state.clicked_movie_state
-      };
-
-      updatedMovieState.movie_clicked = false;
-      updatedMovieState.clicked_movie_id = " ";
-      updatedMovieState.top_streaming_platform = "netflix";
-      updatedMovieState.movies_on_platform = [ ];
-
-      return updatedMovieState;
-    }
-
-    // Updates search_state.user_query 
-    searchQueryChangedHandler = (event) => {
-        const query = event.target.value;
-        let updatedSearchState = {
-            ...this.state.search_state
-        };
-        updatedSearchState.user_query = query;
-        this.setState({
-            search_state : updatedSearchState
-        });
-    };
-
-    // Method to allow Enter-Key to update search_state.user_query
-    pressEnterHandler = ( event ) => {
-        if (event.key === 'Enter') {
-            this.searchPerformedChangedHandler();
-        }
-    }
-
-    // Updates search_state on user button click of enter
-    searchPerformedChangedHandler = () => {
-        let updatedSearchState = {
-            ...this.state.search_state
+    // Clears clicked_movie_state
+    resetMovieState = () => {
+        let updatedMovieState = {
+            ...this.state.clicked_movie_state
         };
 
-        console.log("search performed");
+        updatedMovieState.movie_clicked = false;
+        updatedMovieState.clicked_movie_id = " ";
+        updatedMovieState.top_streaming_platform = "netflix";
+        updatedMovieState.movies_on_platform = [ ];
 
-        updatedSearchState.is_search_performed = true;
+        return updatedMovieState;
+      }
 
-        this.setState({
-            search_state : updatedSearchState,
-            clicked_movie_state : this.resetMovieState()
-        });
-        let movies_array = this.populateTopMoviesFromSearch();
-        this.setState({
-            top_n_movies : movies_array
-        });
-        console.log("movies coming");
-        console.log(movies_array);
-        console.log(this.state.top_n_movies);
-    }
 
     // based on user search query, get 10 matching movies/shows to display
     populateTopMoviesFromSearch() {
@@ -261,8 +219,25 @@ class MarketedSearch extends Component {
       }
     }
 
-    // Modified listing for movie/show clicked;; modify for Carrie implementation
-    clickedListingHandler = ( event ) => {
+    // if not enough matches, filter on less words in the query - recur until 10 matches found
+    getMoreMatchingTitles(exact_matches, query_array) {
+      if (exact_matches.lenght >= 10 | query_array.length === 0) {
+        return exact_matches;
+      } else {
+        let join_query = query_array.join(" ");
+        let just_titles = exact_matches.map(movie => movie.title);
+        let filtered_out_matches = ALL_CONTENT.filter(movie => !just_titles.includes(movie.title));
+        let new_matches = filtered_out_matches.filter(movie => movie.title.includes(join_query));
+        // combine original matches with new matches
+        let joined_array = exact_matches.concat(new_matches);
+        // shorten the search query by one term
+        query_array.pop();
+        return this.getMoreMatchingTitles(joined_array, query_array);
+      }
+    }
+
+      // Modified listing for movie/show clicked;; modify for Carrie implementation
+      clickedListingHandler = ( event ) => {
         const newListingID = event.currentTarget.getAttribute('id');
         let updatedMovieState = {
             ...this.state.clicked_movie_state
@@ -288,21 +263,52 @@ class MarketedSearch extends Component {
         });
     }
 
-    // if not enough matches, filter on less words in the query - recur until 10 matches found
-    getMoreMatchingTitles(exact_matches, query_array) {
-      if (exact_matches.lenght >= 10 | query_array.length === 0) {
-        return exact_matches;
-      } else {
-        let join_query = query_array.join(" ");
-        let just_titles = exact_matches.map(movie => movie.title);
-        let filtered_out_matches = ALL_CONTENT.filter(movie => !just_titles.includes(movie.title));
-        let new_matches = filtered_out_matches.filter(movie => movie.title.includes(join_query));
-        // combine original matches with new matches
-        let joined_array = exact_matches.concat(new_matches);
-        // shorten the search query by one term
-        query_array.pop();
-        return this.getMoreMatchingTitles(joined_array, query_array);
-      }
+    // Updates search_state.user_query 
+    searchQueryChangedHandler = (event) => {
+        const query = event.target.value;
+        let updatedSearchState = {
+            ...this.state.search_state
+        };
+        updatedSearchState.user_query = query;
+        this.setState({
+            search_state : updatedSearchState
+        });
+    };
+
+    // Method to allow Enter-Key to update search_state.user_query
+    pressEnterHandler = ( event ) => {
+        if (event.key === 'Enter') {
+            this.searchPerformedChangedHandler();
+        }
+    }
+
+    // Updates search_state on user button click of enter
+    searchPerformedChangedHandler = () => {
+        this.resetSearchState();
+
+        let updatedSearchState = {
+            ...this.state.search_state
+        };
+
+        console.log("search performed");
+
+        updatedSearchState.is_search_performed = true;
+
+        let movies_array = {
+          ...this.state.top_n_movies
+        };
+
+        movies_array = this.populateTopMoviesFromSearch();
+
+        this.setState({
+            top_n_movies : movies_array,
+            search_state : updatedSearchState,
+            clicked_movie_state : this.resetMovieState()
+        });
+        
+        console.log("movies coming");
+        console.log(movies_array);
+        console.log(this.state.top_n_movies);
     }
 
     render() {
@@ -316,14 +322,10 @@ class MarketedSearch extends Component {
                 searchPerformedHandler={this.searchPerformedChangedHandler}
                 pressEnter={this.pressEnterHandler} />
                 {/* change to top n movie state */}
-              <Results 
-                results={this.state.top_n_movies} />
-
-                {/*
-                    Data Analytics by pulling from our own API
-                    - Most clicked movie
-                    - Recommended streamer provide
-                 */}
+            <Results 
+              results={ this.state.clicked_movie_state.movie_clicked ?
+                  clicked_test : this.state.top_n_movies } 
+              clickList = { this.clickedListingHandler} />
             </Aux>
         );
     }
