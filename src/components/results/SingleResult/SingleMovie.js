@@ -18,12 +18,5 @@ const singleMovie = ( props ) => (
     </Aux>
 );
 
-function formatList( list ) {
-    return (
-        <ul>
-        {list.map(item => <li>{item}</li>)}
-        </ul>
-    );
-  }
 
 export default singleMovie;
