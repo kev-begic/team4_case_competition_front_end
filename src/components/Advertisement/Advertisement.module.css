@@ -1,0 +1,17 @@
+.Advertisement {
+    text-align: center;    
+    margin: auto;
+    background-color: red;
+    width: 25%;
+    font-size: 25px;
+    border-radius: 10px;
+}
+
+.Advertisement a {
+    text-decoration: none;
+    color: white;
+}
+
+.Uppercase {
+    text-transform: uppercase;
+}

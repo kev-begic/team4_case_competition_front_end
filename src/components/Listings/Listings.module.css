@@ -1,0 +1,6 @@
+.Listings {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding: 5px;
+    margin: 5px;
+}

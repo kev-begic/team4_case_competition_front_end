@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 import Aux from '../../hoc/Aux/Aux'
 import SearchFunction from '../../components/SearchFunction/SearchFunction';
+import Listings from '../../components/Listings/Listings';
+import Advertisement from '../../components/Advertisement/Advertisement';
 
 // Array of all movies and shows required for initial search
 const ALL_CONTENT = [{
@@ -61,23 +63,63 @@ const ALL_CONTENT = [{
 
 }];
 
+const clicked_test = [{
+        "title": "Halloween",
+        "release_date": "2018-10-18",
+        "rating": "R",
+        "streaming_platform": [
+          "hbo"
+        ],
+        "production_companies": [
+          "Universal Pictures",
+          "Blumhouse Productions",
+          "Trancas International Films",
+          "Rough House Pictures"
+        ],
+        "imdb": "tt1502407",
+        "vote_count": 2315,
+        "vote_average": 6.4,
+        "original_language": "en",
+        "popularity": 28.043,
+        "overview": "Laurie Strode comes to her final confrontation with Michael Myers, the masked figure who has haunted her since she narrowly escaped his killing spree on Halloween night four decades ago."
+      },
+      {
+        "title": "Bad Times at the El Royale",
+        "release_date": "2018-10-04",
+        "rating": "NR",
+        "streaming_platform": [
+          "hbo"
+        ],
+        "production_companies": [
+          "20th Century Fox",
+          "Goddard Textiles",
+          "TSG Entertainment"
+        ],
+        "imdb": "tt6628394",
+        "vote_count": 1728,
+        "vote_average": 6.8,
+        "original_language": "en",
+        "popularity": 18.966,
+        "overview": "Lake Tahoe, 1969. Seven strangers, each one with a secret to bury, meet at El Royale, a decadent motel with a dark past. In the course of a fateful night, everyone will have one last shot at redemption."
+      }
+]
+
 class MarketedSearch extends Component {
 
-    // Full state
     state = {
         uniqueID: 0,
         top_n_movies: [ ], //subset of ALL_CONTENT
-        movie_clicked: false,
         show_this_advertisement: "id_for_advertisement",
 
         search_state : {
-            user_query: "updated for each character user types",
+            user_query: " ",
             is_search_performed: false
         },
 
         clicked_movie_state : {
+            movie_clicked: false,
             clicked_movie_id : "some_string_12kjbk31j4",
-            top_streaming_platform : "hbo, amazon_prime, etc", // taken from max of top_n_movies
+            top_streaming_platform : "netflix", // taken from max of top_n_movies
             movies_on_platform : [ ]
         }
     };
@@ -94,40 +136,95 @@ class MarketedSearch extends Component {
         });
     };
 
-    searchPerformedChangedHandler = (event) => {
+    pressEnterHandler = ( event ) => {
+        if (event.key == 'Enter') {
+            this.searchPerformedChangedHandler();
+        }
+    }
+
+    resetSearchState = () => {
         let updatedSearchState = {
             ...this.state.search_state
         };
+        
+        updatedSearchState.user_query = " ";
+        updatedSearchState.is_search_performed = false;
+
+        return updatedSearchState;
+    }
+
+    resetMovieState = () => {
+
+        let updatedMovieState = {
+            ...this.state.clicked_movie_state
+        };
+
+        updatedMovieState.movie_clicked = false;
+        updatedMovieState.clicked_movie_id = " ";
+        updatedMovieState.top_streaming_platform = "netflix";
+        updatedMovieState.movies_on_platform = [ ];
+
+        return updatedMovieState;
+    }
+
+    searchPerformedChangedHandler = () => {
+        let updatedSearchState = {
+            ...this.state.search_state
+        };
+
+        console.log("search performed");
+
         updatedSearchState.is_search_performed = true;
-        console.log("clicked button")
-        console.log(updatedSearchState.user_query);
+
         this.setState({
-            search_state : updatedSearchState
+            search_state : updatedSearchState,
+            clicked_movie_state : this.resetMovieState()
         });
 
-        // populate top_n_movies
+        console.log(this.state);
+    }
+
+    clickedListingHandler = ( event ) => {
+        const newListingID = event.currentTarget.getAttribute('id');
+        let updatedMovieState = {
+            ...this.state.clicked_movie_state
+        };
+        updatedMovieState.movie_clicked = true;
+        updatedMovieState.clicked_movie_id = newListingID;
+
+        // TODO: Given newListingID, find item in ALL_CONTENT 
+        // setting top_streaming_platform to 1) the single platform 2) whatever playform we rank highest
+        // && find 3 movies related to that platform/movie
+
+        // _TESTING_ CODE
+        updatedMovieState.top_streaming_platform = "hbo";
+        updatedMovieState.movies_on_platform = clicked_test; // not actual functionality
+        // EO_TESTING_ CODE
+
+        console.log("updated movie state")
+        console.log(updatedMovieState);
+
+        this.setState({
+            clicked_movie_state : updatedMovieState,
+            search_state : this.resetSearchState()
+        });
     }
 
     render() {
         return( 
-            <Aux>
-                <SearchFunction 
-                    searchState={this.state.search_state.user_query} 
-                    searchChangeHandler={this.searchQueryChangedHandler} 
-                    searchPerformedHandler={this.searchPerformedChangedHandler}/>
-                {/*
-                    if (!movieClicked)
-                        show top_n_movies
-                    else 
-                        show clicked_movie_id / clicked_movie_state 
-                 */}
-
-                {/*
-                    Data Analytics by pulling from our own API
-                    - Most clicked movie
-                    - Recommended streamer provide
-                 */}
-            </Aux>
+          <Aux>
+            <Advertisement 
+                streamingPlatform={this.state.clicked_movie_state.top_streaming_platform}/>
+            <SearchFunction 
+                searchState={this.state.search_state.user_query} 
+                searchChangeHandler={this.searchQueryChangedHandler} 
+                searchPerformedHandler={this.searchPerformedChangedHandler}
+                pressEnter={this.pressEnterHandler} />
+            <Listings
+                listings={ this.state.clicked_movie_state.movie_clicked ? 
+                    this.state.clicked_movie_state.movies_on_platform : ALL_CONTENT}
+                listingClicked={this.clickedListingHandler} /> 
+          </Aux>
         );
     }
 }
