@@ -3,6 +3,12 @@ import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux'
 import SearchFunction from '../../components/SearchFunction/SearchFunction';
 import Results from '../../components/results/Results'
+// import getMovie from '../../api/get/getMovie'
+// import getMovieID from '../../api/get/getMovieID'
+// import getShow from '../../api/get/getShow'
+// import getShowID from '../../api/get/getShowID'
+import postUserID from '../../api/post/postUserID'
+import postState from '../../api/post/postState'
 
 // Array of all movies and shows required for initial search
 const ALL_CONTENT = [{
@@ -105,9 +111,13 @@ const ALL_CONTENT = [{
   }];
 
 class MarketedSearch extends Component {
-
     // Full state
     state = {
+        all_movies: [],
+        all_shows: [],
+        moviesLoaded: false,
+        showsLoaded: false,
+
         uniqueID: 0,
         top_n_movies: [ ], //subset of ALL_CONTENT
         movie_clicked: false,
@@ -120,11 +130,73 @@ class MarketedSearch extends Component {
 
         clicked_movie_state : {
             clicked_movie_id : "some_string_12kjbk31j4",
+            clicked_movie_obj: [],
             top_streaming_platform : "hbo, amazon_prime, etc", // taken from max of top_n_movies
             movies_on_platform : [ ]
         }
     };
 
+    componentWillMount() {
+        this.renderMovies();
+        this.renderShows();
+    //     const p2 = {
+    //       "userID":3,
+    //       "searchPerformed":false,
+    //       "userQuery":" ",
+    //       "movieClicked":false,
+    //       "movieID":" ",
+    //       "movieStreamingPlatform":" ",
+    //       "topStreamingPlatformForSearch":" "
+    //    }
+    //     postState(p2)
+    }
+
+    renderMovies() {
+      fetch('https://casecomp.konnectrv.io/movie')
+          .then((response) => response.json())
+          .then((responseJson) => {
+            this.setState({
+              moviesLoaded: true,
+              all_movies : responseJson })
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+  }
+  renderMovieById(id) {
+    fetch('https://casecomp.konnectrv.io/movie/' + id)
+        .then((response) => response.json())
+        .then((responseJson) => {
+          this.setState({
+            clicked_movie_obj : responseJson })
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+}
+  renderShows() {
+    fetch('https://casecomp.konnectrv.io/show')
+        .then((response) => response.json())
+        .then((responseJson) => {
+          this.setState({
+            showsLoaded: true,
+            all_shows : responseJson })
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+}
+renderShowById(id) {
+  fetch('https://casecomp.konnectrv.io/show/' + id)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          clicked_show_obj : responseJson }) // Not yet in state
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+}
     searchQueryChangedHandler = (event) => {
         const query = event.target.value;
         let updatedSearchState = {
@@ -167,7 +239,7 @@ class MarketedSearch extends Component {
     // based on user search query, get 10 matching movies/shows to display
     populateTopMoviesFromSearch() {
       // matches user_query to all titles in the ALL_CONTENT array
-      let exact_matches = ALL_CONTENT.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
+      let exact_matches = this.state.all_movies.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
       if (exact_matches.length < 10) {
         let query_array = this.state.search_state.user_query.split(" ");
         return this.getMoreMatchingTitles(exact_matches, query_array);
@@ -183,7 +255,7 @@ class MarketedSearch extends Component {
       } else {
         let join_query = query_array.join(" ");
         let just_titles = exact_matches.map(movie => movie.title);
-        let filtered_out_matches = ALL_CONTENT.filter(movie => !just_titles.includes(movie.title));
+        let filtered_out_matches = this.state.all_movies.filter(movie => !just_titles.includes(movie.title));
         let new_matches = filtered_out_matches.filter(movie => movie.title.toLowerCase().includes(join_query.toLowerCase()));
         // combine original matches with new matches
         let joined_array = exact_matches.concat(new_matches);
@@ -199,6 +271,10 @@ class MarketedSearch extends Component {
     }
 
     render() {
+      const {moviesLoaded, showsLoaded} = this.state;
+      if (!moviesLoaded && !showsLoaded) {
+        return <div>Hang tight, we're doing awesome stuff...</div>
+      } else {
         return(
             <Aux>
                 <SearchFunction
@@ -219,6 +295,7 @@ class MarketedSearch extends Component {
                  */}
             </Aux>
         );
+        }
     }
 }
 
