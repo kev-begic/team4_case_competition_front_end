@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux'
 import SearchFunction from '../../components/SearchFunction/SearchFunction';
 import Advertisement from '../../components/Advertisement/Advertisement';
+import Results from '../../components/results/Results'
 
 // Array of all movies and shows required for initial search
 const ALL_CONTENT = [{
@@ -59,7 +60,49 @@ const ALL_CONTENT = [{
     "popularity": 140.641,
     "overview": "In the wake of his dramatic escape from captivity, Jesse Pinkman must come to terms with his past in order to forge some kind of future."
 
-}];
+  },
+
+  {
+    "title": "Inner",
+    "release_date": "2019-10-11",
+    "rating": "NR",
+    "streaming_platform": [
+      "netflix"
+    ],
+    "production_companies": [
+      "Sony Pictures Television",
+      "High Bridge Productions",
+      "Gran Via Productions"
+    ],
+    "imdb": "tt9243946",
+    "vote_count": 580,
+    "vote_average": 7.3,
+    "original_language": "en",
+    "popularity": 140.641,
+    "overview": "In the wake of his dramatic escape from captivity, Jesse Pinkman must come to terms with his past in order to forge some kind of future."
+
+  },
+
+  {
+    "title": "Park",
+    "release_date": "2019-10-11",
+    "rating": "NR",
+    "streaming_platform": [
+      "netflix"
+    ],
+    "production_companies": [
+      "Sony Pictures Television",
+      "High Bridge Productions",
+      "Gran Via Productions"
+    ],
+    "imdb": "tt9243946",
+    "vote_count": 580,
+    "vote_average": 7.3,
+    "original_language": "en",
+    "popularity": 140.641,
+    "overview": "In the wake of his dramatic escape from captivity, Jesse Pinkman must come to terms with his past in order to forge some kind of future."
+
+  }];
 
 const clicked_test = [{
         "title": "Halloween",
@@ -123,6 +166,47 @@ class MarketedSearch extends Component {
         }
     };
 
+    // Send POST request to back-end
+    sendStateToBackEnd() {
+      console.log('sending state');
+    }
+
+    componentDidMount() {
+      // Initialize movie array...
+      window.addEventListener("beforeunload", this.sendStateToBackEnd);
+    }
+    
+    componentWillUnmount() {
+      window.removeEventListener("beforeunload", this.sendStateToBackEnd);
+    }
+
+
+    // Clears search_state
+    resetSearchState = () => {
+      let updatedSearchState = {
+          ...this.state.search_state
+      };
+      
+      updatedSearchState.user_query = " ";
+      updatedSearchState.is_search_performed = false;
+
+      return updatedSearchState;
+    }   
+
+  // Clears clicked_movie_state
+  resetMovieState = () => {
+      let updatedMovieState = {
+          ...this.state.clicked_movie_state
+      };
+
+      updatedMovieState.movie_clicked = false;
+      updatedMovieState.clicked_movie_id = " ";
+      updatedMovieState.top_streaming_platform = "netflix";
+      updatedMovieState.movies_on_platform = [ ];
+
+      return updatedMovieState;
+    }
+
     // Updates search_state.user_query 
     searchQueryChangedHandler = (event) => {
         const query = event.target.value;
@@ -130,7 +214,6 @@ class MarketedSearch extends Component {
             ...this.state.search_state
         };
         updatedSearchState.user_query = query;
-        console.log(updatedSearchState.user_query);
         this.setState({
             search_state : updatedSearchState
         });
@@ -141,32 +224,6 @@ class MarketedSearch extends Component {
         if (event.key === 'Enter') {
             this.searchPerformedChangedHandler();
         }
-    }
-
-    // Clears search_state
-    resetSearchState = () => {
-        let updatedSearchState = {
-            ...this.state.search_state
-        };
-        
-        updatedSearchState.user_query = " ";
-        updatedSearchState.is_search_performed = false;
-
-        return updatedSearchState;
-    }
-
-    // Clears clicked_movie_state
-    resetMovieState = () => {
-        let updatedMovieState = {
-            ...this.state.clicked_movie_state
-        };
-
-        updatedMovieState.movie_clicked = false;
-        updatedMovieState.clicked_movie_id = " ";
-        updatedMovieState.top_streaming_platform = "netflix";
-        updatedMovieState.movies_on_platform = [ ];
-
-        return updatedMovieState;
     }
 
     // Updates search_state on user button click of enter
@@ -183,8 +240,25 @@ class MarketedSearch extends Component {
             search_state : updatedSearchState,
             clicked_movie_state : this.resetMovieState()
         });
+        let movies_array = this.populateTopMoviesFromSearch();
+        this.setState({
+            top_n_movies : movies_array
+        });
+        console.log("movies coming");
+        console.log(movies_array);
+        console.log(this.state.top_n_movies);
+    }
 
-        this.sendStateToBackEnd();
+    // based on user search query, get 10 matching movies/shows to display
+    populateTopMoviesFromSearch() {
+      // matches user_query to all titles in the ALL_CONTENT array
+      let exact_matches = ALL_CONTENT.filter(movie => movie.title.includes(this.state.search_state.user_query));
+      if (exact_matches.length < 10) {
+        let query_array = this.state.search_state.user_query.split(" ");
+        return this.getMoreMatchingTitles(exact_matches, query_array);
+      } else {
+        return exact_matches;
+      }
     }
 
     // Modified listing for movie/show clicked;; modify for Carrie implementation
@@ -214,30 +288,43 @@ class MarketedSearch extends Component {
         });
     }
 
-    // Send POST request to back-end
-    sendStateToBackEnd() {
-      console.log('sending state');
-    }
-
-    componentDidMount() {
-      window.addEventListener("beforeunload", this.sendStateToBackEnd);
-    }
-    
-    componentWillUnmount() {
-      window.removeEventListener("beforeunload", this.sendStateToBackEnd);
+    // if not enough matches, filter on less words in the query - recur until 10 matches found
+    getMoreMatchingTitles(exact_matches, query_array) {
+      if (exact_matches.lenght >= 10 | query_array.length === 0) {
+        return exact_matches;
+      } else {
+        let join_query = query_array.join(" ");
+        let just_titles = exact_matches.map(movie => movie.title);
+        let filtered_out_matches = ALL_CONTENT.filter(movie => !just_titles.includes(movie.title));
+        let new_matches = filtered_out_matches.filter(movie => movie.title.includes(join_query));
+        // combine original matches with new matches
+        let joined_array = exact_matches.concat(new_matches);
+        // shorten the search query by one term
+        query_array.pop();
+        return this.getMoreMatchingTitles(joined_array, query_array);
+      }
     }
 
     render() {
-        return( 
-          <Aux>
-            <Advertisement 
+        return(
+            <Aux>
+              <Advertisement 
                 streamingPlatform={this.state.clicked_movie_state.top_streaming_platform}/>
             <SearchFunction 
                 searchState={this.state.search_state.user_query} 
                 searchChangeHandler={this.searchQueryChangedHandler} 
                 searchPerformedHandler={this.searchPerformedChangedHandler}
                 pressEnter={this.pressEnterHandler} />
-          </Aux>
+                {/* change to top n movie state */}
+              <Results 
+                results={this.state.top_n_movies} />
+
+                {/*
+                    Data Analytics by pulling from our own API
+                    - Most clicked movie
+                    - Recommended streamer provide
+                 */}
+            </Aux>
         );
     }
 }
