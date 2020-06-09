@@ -10,7 +10,7 @@ const ALL_CONTENT = [{
     "release_date": "2019-09-21",
     "rating": "NR",
     "streaming_platform": [
-      "netflix"
+      "hbo"
     ],
     "production_companies": [
       "42",
@@ -29,7 +29,7 @@ const ALL_CONTENT = [{
     "release_date": "2019-09-19",
     "rating": "NR",
     "streaming_platform": [
-      "netflix"
+      "hbo"
     ],
     "production_companies": [
       "Copperheart Entertainment"
@@ -46,7 +46,7 @@ const ALL_CONTENT = [{
     "release_date": "2019-10-11",
     "rating": "NR",
     "streaming_platform": [
-      "netflix", "hbo"
+      "hbo", "hbo"
     ],
     "production_companies": [
       "Sony Pictures Television",
@@ -151,7 +151,7 @@ class MarketedSearch extends Component {
     state = {
         uniqueID: 0,
         top_n_movies: [ ], //subset of ALL_CONTENT
-        show_this_advertisement: "id_for_advertisement",
+        show_this_advertisement: "netflix",
 
         search_state : {
             user_query: " ",
@@ -174,7 +174,6 @@ class MarketedSearch extends Component {
     }
 
     componentDidMount() {
-      // Initialize movie array...
       window.addEventListener("beforeunload", this.sendStateToBackEnd);
     }
     
@@ -219,6 +218,7 @@ class MarketedSearch extends Component {
         movies_array = this.populateTopMoviesFromSearch();
         let top_stream = this.show_this_advertisement;
         top_stream = this.findTopStreamingPlatform(movies_array);
+        console.log(top_stream);
         this.setState({
           search_state : updatedSearchState,
           top_n_movies : movies_array,
@@ -340,7 +340,7 @@ class MarketedSearch extends Component {
         return(
             <Aux>
               <Advertisement 
-                streamingPlatform={this.state.clicked_movie_state.top_streaming_platform}/>
+                streamingPlatform={this.state.show_this_advertisement}/>
               <SearchFunction
                   searchState={this.state.search_state.user_query}
                   searchChangeHandler={this.searchQueryChangedHandler}
