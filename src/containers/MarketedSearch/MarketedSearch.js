@@ -104,6 +104,7 @@ const clicked_test = [{
 
 class MarketedSearch extends Component {
 
+    // callBack that automatically sends event
     state = {
         uniqueID: 0,
         top_n_movies: [ ], //subset of ALL_CONTENT
@@ -183,7 +184,6 @@ class MarketedSearch extends Component {
             clicked_movie_state : this.resetMovieState()
         });
 
-        console.log(this.state);
         this.sendStateToBackEnd();
     }
 
