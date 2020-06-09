@@ -14,11 +14,11 @@ const clickedMovie = ( props ) => (
                 <tbody>
                 <tr>
                     <td>Rating: {props.movie.rating}</td>
-                    <td>Vote Count: {props.movie.vote_count}</td>
+                    <td>Popularity: {props.movie.popularity}</td>
                 </tr>
                 <tr>
-                    <td>Popularity: {props.movie.popularity}</td>
                     <td>Vote Average: {props.movie.vote_average}</td>
+                    <td>Vote Count: {props.movie.vote_count}</td>
                 </tr>
                 <tr>
                     <td>Format: Movie</td>
