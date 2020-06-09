@@ -114,7 +114,7 @@ class MarketedSearch extends Component {
         show_this_advertisement: "id_for_advertisement",
 
         search_state : {
-            user_query: "updated for each character user types",
+            user_query: "Search",
             is_search_performed: false
         },
 
@@ -209,7 +209,7 @@ class MarketedSearch extends Component {
                 {/* change to top n movie state */}
                 <Results
                     results={this.state.top_n_movies}
-                    // resultsClickedHandler={this.movieClickedHandler}
+                    resultsClickedHandler={this.movieClickedHandler}
                  />
 
                 {/*
