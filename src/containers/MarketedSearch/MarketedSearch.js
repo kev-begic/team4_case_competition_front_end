@@ -19,7 +19,7 @@ class MarketedSearch extends Component {
         showsLoaded: false,
         allLoaded: false,
 
-        uniqueID: 0, // userID 
+        uniqueID: 0, // userID
         top_n_movies: [ ],
         show_this_advertisement: "netflix", //topStreamingPlatformForSearch
 
@@ -59,7 +59,7 @@ class MarketedSearch extends Component {
       let sendState = this.parseState();
       console.log(sendState);
       // postState(sendState);
-      // TODO: Send to endpoint 
+      // TODO: Send to endpoint
     }
 
     // Source: https://www.w3resource.com/javascript-exercises/javascript-math-exercise-23.php
@@ -76,7 +76,7 @@ class MarketedSearch extends Component {
     componentDidMount() {
       this.renderMovies();
       this.renderShows();
-      
+
       window.addEventListener("beforeunload", this.sendPostState);
 
       let newUserID = this.createUniqueIdentifier();
@@ -100,12 +100,12 @@ class MarketedSearch extends Component {
       let updatedSearchState = {
           ...this.state.search_state
       };
-      
+
       updatedSearchState.user_query = "";
       updatedSearchState.is_search_performed = false;
 
       return updatedSearchState;
-    }   
+    }
 
     // Clears clicked_movie_state
     resetMovieState = () => {
@@ -227,6 +227,7 @@ class MarketedSearch extends Component {
   movieClickedHandler = (event) => {
         console.log("begin movie click handler");
         const newListingId = event.currentTarget.getAttribute('id');
+        console.log(event.currentTarget);
         this.renderMovieById(newListingId);
 
         let suggested_movies = this.populateTopMoviesFromSearch(2);
@@ -248,7 +249,7 @@ class MarketedSearch extends Component {
         updatedResult.is_movie = isMovie;
 
         this.setState({
-            clicked_movie_state : updatedResult, 
+            clicked_movie_state : updatedResult,
             search_state : this.resetSearchState()
         }, this.sendPostState());
         console.log("end movie click handler");
@@ -257,7 +258,8 @@ class MarketedSearch extends Component {
     // based on user search query, get 10 matching movies/shows to display
     populateTopMoviesFromSearch( numMatches ) {
       // matches user_query to all titles in the ALL_CONTENT array
-      let exact_matches = this.state.all_movies.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
+      let all_content_array = this.state.all_movies.concat(this.state.all_shows).sort();
+      let exact_matches = all_content_array.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
       if (exact_matches.length < numMatches ) {
         let query_array = this.state.search_state.user_query.split(" ");
         return this.getMoreMatchingTitles(exact_matches, query_array);
@@ -271,9 +273,10 @@ class MarketedSearch extends Component {
       if (exact_matches.lenght >= 10 | query_array.length === 0) {
         return exact_matches;
       } else {
+        let all_content_array = this.state.all_movies.concat(this.state.all_shows).sort();
         let join_query = query_array.join(" ");
         let just_titles = exact_matches.map(movie => movie.title);
-        let filtered_out_matches = this.state.all_movies.filter(movie => !just_titles.includes(movie.title));
+        let filtered_out_matches = all_content_array.filter(movie => !just_titles.includes(movie.title));
 
         /*
           TODO: Append all_shows to filtered_out_matches (currently only movies)
@@ -315,8 +318,9 @@ class MarketedSearch extends Component {
     }
 
     determineClickedContent() {
-      let resultObject;
+      let resultObject = null;
       for ( let i = 0; i < this.state.top_n_movies.length; ++i ) {
+        console.log(this.state.top_n_movies[i].imdb, this.state.clicked_movie_state.clicked_movie_id);
         if ( this.state.top_n_movies[i].imdb === this.state.clicked_movie_state.clicked_movie_id) {
           resultObject = this.state.top_n_movies[i];
         }
@@ -335,7 +339,7 @@ class MarketedSearch extends Component {
         return (
           <Results
             results={this.state.top_n_movies}
-            resultsClickedHandler={this.movieClickedHandler} /> 
+            resultsClickedHandler={this.movieClickedHandler} />
         );
       };
 
@@ -351,7 +355,7 @@ class MarketedSearch extends Component {
         let bottom = this.determineConditionalRender();
         return(
             <Aux>
-              <Advertisement 
+              <Advertisement
                 streamingPlatform={this.state.show_this_advertisement} />
               <SearchFunction
                 searchState={this.state.search_state.user_query}
