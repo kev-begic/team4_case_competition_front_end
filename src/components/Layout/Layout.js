@@ -15,7 +15,13 @@ const layout = ( props ) => (
             {props.children}
         </main>
         <hr />
-        <footer>Names, whatever we want here</footer>
+        <footer>
+            <div className={classes.Footer}>
+                <span>Copyright</span>
+                <span>Created by Synchronous Sages</span>
+                <span>RV 2020 Interns</span>
+            </div>
+        </footer>
     </Aux>
 );
 
