@@ -8,9 +8,8 @@ import Aux from '../../../hoc/Aux/Aux';
 const singleShow = ( props ) => (
     <Aux>
         <div 
-            type="text"
             className={classes.box}
-        >
+            onClick={props.resultsClickedHandler} >
             <h1>{props.show.title}</h1>
             <p>Type: TV Show</p>
             <p>Streaming: {props.show.streaming_platform.join(", ")}</p>

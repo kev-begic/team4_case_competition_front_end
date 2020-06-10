@@ -1,30 +1,26 @@
 import React from 'react';
+
 import './SingleResult/SingleResult.module.css';
 import SingleMovie from './SingleResult/SingleMovie';
 import SingleShow from './SingleResult/SingleShow';
-
-
+import Aux from '../../hoc/Aux/Aux';
+import classes from './Results.module.css';
 
 let fillTopTen = (array, clickHandler) => {
-    console.log("called");
     const result = [];
     let num = 10;
-    if (array.length < 10) {
-      let num = array.length
-    }
+
     for(const [index, value] of array.slice(0, num).entries()){
-        if("title" in value){
+        if ("title" in value) {
             result.push(<SingleMovie key={Math.random()} movie={value} resultsClickedHandler={clickHandler}/>);
-        } else{
+        } else {
             result.push(<SingleShow key={Math.random()} show={value} resultsClickedHandler={clickHandler}/>);
         }
     }
-    console.log(result);
     return(
-        <div>
+        <div className={classes.Results}>
             {result}
         </div>
-
     );
 }
 
