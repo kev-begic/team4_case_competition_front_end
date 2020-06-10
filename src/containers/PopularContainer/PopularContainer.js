@@ -6,6 +6,7 @@ class PopularContainer extends Component {
         mostClickedMovieLoaded: false,
         mostClickedMovieIdLoaded: false,
         mostCommonPlatformLoaded: false,
+        mostClickedShowIdLoaded: false,
         mostClickedMovie: "Tarzan",
         mostClickedMovieId: "id",
         mostCommonPlatform: "Bazinga"
@@ -16,11 +17,24 @@ class PopularContainer extends Component {
         this.getMostCommonPlatform();
     }
     getMostClickedMovieById (id) {
-      fetch('https://casecomp.konnectrv.io/show/' + id)
+      fetch('https://casecomp.konnectrv.io/movie/' + id)
           .then((response) => response.json())
           .then((responseJson) => {
             this.setState({
               mostClickedMovieIdLoaded: true,
+              mostClickedMovie: responseJson.title
+            })
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+    }
+    getMostClickedShowById (id) {
+      fetch('https://casecomp.konnectrv.io/show/' + id)
+          .then((response) => response.json())
+          .then((responseJson) => {
+            this.setState({
+              mostClickedShowIdLoaded: true,
               mostClickedMovie: responseJson.title
             })
           })
@@ -36,9 +50,13 @@ class PopularContainer extends Component {
         }
       }
     fetch('https://7b1is9shg5.execute-api.us-east-2.amazonaws.com/FirstProd/topmovie', options)
-        .then((response) => response.text())
+        .then((response) => response.json())
         .then((response) => {
-          this.getMostClickedMovieById(response.replace(/"/g, ""))
+          if (response.isMovie === '1') {
+          this.getMostClickedMovieById(response.id)
+          } else {
+            this.getMostClciekdShowbyId(response.id)
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -69,7 +87,7 @@ class PopularContainer extends Component {
       } else {
       return (
         <Aux>
-            <span>Top Movie: {this.state.mostClickedMovie}</span>
+            <span>Top showMovie: {this.state.mostClickedMovie}</span>
             <span>Top Platform: {this.state.mostCommonPlatform}</span>
         </Aux>
       )
