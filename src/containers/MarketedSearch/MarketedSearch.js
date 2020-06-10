@@ -39,8 +39,6 @@ class MarketedSearch extends Component {
     };
 
     sendPostState( payload ) {
-      console.log('sending updated state to endpoing2');
-      console.log( payload );
       postState(payload);
     }
 
@@ -67,9 +65,7 @@ class MarketedSearch extends Component {
         uniqueID : newUserID
       });
 
-      console.log("sending new userID to endpoint1");
       postUserID(newUserID);
-      console.log(newUserID);
     }
 
     componentWillUnmount() {
@@ -278,7 +274,6 @@ class MarketedSearch extends Component {
             clicked_movie_state : updatedResult,
             search_state : this.resetSearchState()
         }, this.sendPostState(parsedState));
-        console.log("end movie click handler");
     };
 
     // based on user search query, get 10+ matching movies/shows to display
@@ -375,14 +370,12 @@ class MarketedSearch extends Component {
       let suggested = [];
       let resultObject = null;
       for ( let i = 0; i < this.state.top_n_movies.length; ++i ) {
-        console.log(this.state.clicked_movie_state.clicked_movie_id, this.state.top_n_movies[i].imdb);
         if ( this.state.top_n_movies[i].imdb === this.state.clicked_movie_state.clicked_movie_id) {
           resultObject = this.state.top_n_movies[i];
         } else {
           suggested.push(this.state.top_n_movies[i]);
         }
       }
-      console.log(suggested);
       if ('release_date' in resultObject) {
         return (
         <ClickedMovie
@@ -400,8 +393,6 @@ class MarketedSearch extends Component {
     }
 
     determineConditionalRender () {
-      console.log("calling conditionalRender");
-
       if ( !this.state.clicked_movie_state.movie_clicked ) {
         return (
           <Results
