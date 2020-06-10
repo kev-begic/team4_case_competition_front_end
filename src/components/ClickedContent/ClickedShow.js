@@ -57,7 +57,6 @@ const clickedShow = ( props ) => (
 
 let getDisplay = (object, resultsClickedHandler) => {
     let result;
-    console.log(object);
     if("release_date" in object){
         result = <SingleMovie key={Math.random()} movie={object} resultsClickedHandler={resultsClickedHandler} />;
     } else{

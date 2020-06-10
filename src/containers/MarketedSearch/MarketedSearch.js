@@ -242,7 +242,6 @@ class MarketedSearch extends Component {
     movieClickedHandler = (event) => {
 
         const newListingId = event.currentTarget.getAttribute('id');
-        console.log(event.currentTarget);
         this.renderMovieById(newListingId);
 
         let suggested_movies = this.populateTopMoviesFromSearch(2);
@@ -358,7 +357,6 @@ class MarketedSearch extends Component {
       let suggested = [];
       let resultObject = null;
       for ( let i = 0; i < this.state.top_n_movies.length; ++i ) {
-        console.log(this.state.top_n_movies[i].imdb, this.state.clicked_movie_state.clicked_movie_id);
         if ( this.state.top_n_movies[i].imdb === this.state.clicked_movie_state.clicked_movie_id) {
           resultObject = this.state.top_n_movies[i];
         } else {
