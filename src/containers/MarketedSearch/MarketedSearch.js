@@ -39,8 +39,6 @@ class MarketedSearch extends Component {
     };
 
     sendPostState( payload ) {
-      console.log('sending updated state to endpoing2');
-      console.log( payload );
       postState(payload);
     }
 
