@@ -6,3 +6,11 @@
     text-align: center;
     align-content: center;
 }
+
+.Header {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    margin: 0px 1vw;
+    margin-top: 5px;
+}

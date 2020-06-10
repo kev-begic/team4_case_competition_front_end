@@ -41,14 +41,13 @@ const clickedShow = ( props ) => (
                 <tbody>
                     <tr>
                         <td>
-                            {getDisplay(props.otherResults[0])}
-                            
+                            {getDisplay(props.otherResults[0], props.resultsClickedHandler)}
                         </td>
                         <td>
-                        {getDisplay(props.otherResults[1])}
+                            {getDisplay(props.otherResults[1], props.resultsClickedHandler)}
                         </td>
                         <td>
-                        {getDisplay(props.otherResults[2])}
+                            {getDisplay(props.otherResults[2], props.resultsClickedHandler)}
                         </td>
                     </tr>
                 </tbody>
@@ -57,13 +56,12 @@ const clickedShow = ( props ) => (
     </Aux>
 );
 
-let getDisplay = (object) => {
+let getDisplay = (object, resultsClickedHandler) => {
     let result;
-    console.log(object);
     if("release_date" in object){
-        result = <SingleMovie movie={object} />;
+        result = <SingleMovie key={Math.random()} movie={object} resultsClickedHandler={resultsClickedHandler} />;
     } else{
-        result = <SingleShow show={object} />;
+        result = <SingleShow key={Math.random()} show={object} resultsClickedHandler={resultsClickedHandler} />;
     }
     return(result);
 }
