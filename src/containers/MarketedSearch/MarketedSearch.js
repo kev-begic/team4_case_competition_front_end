@@ -212,9 +212,9 @@ class MarketedSearch extends Component {
 
       let movies_array = [...this.state.top_n_movies]
       movies_array = this.populateTopMoviesFromSearch();
-      if (movies_array.length < 10) {
-        console.log(movies_array);
+      if (movies_array.length === 0) {
         movies_array = this.getContentFromPlatform("netflix");
+        console.log(movies_array);
       }
 
       let top_stream = this.show_this_advertisement;
@@ -318,7 +318,7 @@ class MarketedSearch extends Component {
     // function is called if no results returned from search
     getContentFromPlatform(platform) {
       let all_content_array = this.state.all_movies.concat(this.state.all_shows).sort();
-      return all_content_array.filter(content => content.streaming_platform === platform);
+      return all_content_array.filter(content => content.streaming_platform.includes(platform));
     }
 
       // updates top streaming platform for user based on search results
