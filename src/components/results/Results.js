@@ -16,11 +16,27 @@ let fillTopTen = (array, clickHandler) => {
             result.push(<SingleShow key={Math.random()} show={value} resultsClickedHandler={clickHandler}/>);
         }
     }
+
     return(
-        <div className={classes.Results}>
-            {result}
-        </div>
+        <table className={classes.results}>
+            <tbody>
+                {createTable(result)}
+            </tbody>
+            
+        </table>
     );
+}
+
+let createTable = (arrayOfDisplays) => {
+    let result = [];
+    for(let i = 0; i < arrayOfDisplays.length; i=i+2 ){
+        if(i+1 < arrayOfDisplays.length){
+            result.push((<tr key={Math.random()}><td>{arrayOfDisplays[i]}</td><td>{arrayOfDisplays[i+1]}</td></tr>));
+        } else{
+            result.push(<tr key={Math.random()}><td>{arrayOfDisplays[i]}</td></tr>)
+        }
+    }
+    return(result);
 }
 
 const results = (props) => {return(fillTopTen(props.results, props.resultsClickedHandler))};

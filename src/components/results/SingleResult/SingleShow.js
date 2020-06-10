@@ -9,7 +9,6 @@ const singleShow = ( props ) => (
     <Aux>
         <div
             id={props.show.imdb}
-            className={classes.box}
             onClick={props.resultsClickedHandler} >
             <h1>{props.show.title}</h1>
             <p>Type: TV Show</p>
