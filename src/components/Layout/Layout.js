@@ -6,10 +6,8 @@ import classes from './Layout.module.css';
 
 const layout = ( props ) => (
     <Aux>
-        <div className={classes.Header}>
-            <span>Team 4 Logo/Name | Title | Red Ventures Logo</span>
-            <PopularContainer />
-        </div>
+        <div className={classes.Centered}>Synchronous Sages</div>
+        <div className={classes.Header}> <PopularContainer /> </div>
         <hr />
         <main className={classes.Content}>
             {props.children}
