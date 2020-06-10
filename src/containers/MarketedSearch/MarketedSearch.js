@@ -273,8 +273,6 @@ class MarketedSearch extends Component {
         console.log("end movie click handler");
     };
 
-
-
     // based on user search query, get 10+ matching movies/shows to display
     populateTopMoviesFromSearch() {
       // combines all_shows and all_movies arrays
@@ -380,13 +378,13 @@ class MarketedSearch extends Component {
       let i = 0;
       while(suggested.length < 3){
         let currentMovie = this.state.all_movies[i];
+        if ( !currentMovie ) break; 
         if ( !(currentMovie.imdb === this.state.clicked_movie_state.clicked_movie_id)) {
             if (currentMovie.streaming_platform.includes(this.state.clicked_movie_state.streaming_platform)){
               suggested.push(this.state.all_movies[i]);
             }
           }
           i++;
-
       }
 
       if ('release_date' in resultObject) {
