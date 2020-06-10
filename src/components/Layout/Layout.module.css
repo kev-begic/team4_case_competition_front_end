@@ -19,6 +19,10 @@
     margin-top: 5px;
 }
 
+.Header > span {
+    font-weight: bold;
+}
+
 .Footer {
     display: flex;
     justify-content: space-around;
