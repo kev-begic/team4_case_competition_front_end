@@ -184,11 +184,12 @@ class MarketedSearch extends Component {
       });
     }
 
-    searchOccuredParsed( isSearch, infoOne = "", movieStreamingPlatform= "" ) {
+    searchOccuredParsed( isSearch, infoOne = "", movieStreamingPlatform= "", isMovie=false ) {
       let parsedState = { };
 
       // General state
       parsedState.userID = this.state.uniqueID;
+      parsedState.isMovie = isMovie;
 
       if ( isSearch ) {
         parsedState.topStreamingPlatformForSearch = infoOne;
@@ -212,7 +213,6 @@ class MarketedSearch extends Component {
         parsedState.movieID = infoOne;
         parsedState.movieStreamingPlatform = movieStreamingPlatform;
       }
-
       return parsedState;
     }
 
@@ -267,7 +267,7 @@ class MarketedSearch extends Component {
 
         const platforms = event.currentTarget.getAttribute('platforms');
 
-        let parsedState = this.searchOccuredParsed(false, newListingId, platforms);
+        let parsedState = this.searchOccuredParsed(false, newListingId, platforms, isMovie);
 
         this.setState({
             clicked_movie_state : updatedResult,
