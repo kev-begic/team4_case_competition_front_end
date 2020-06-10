@@ -39,6 +39,8 @@ class MarketedSearch extends Component {
     };
 
     sendPostState( payload ) {
+      console.log("sending to aws");
+      console.log(payload);
       postState(payload);
     }
 
@@ -232,6 +234,7 @@ class MarketedSearch extends Component {
 
       this.setState({
         search_state : updatedSearchState,
+        show_this_advertisement: top_stream,
         top_n_movies : movies_array,
         clicked_movie_state: this.resetMovieState()
       }, this.sendPostState(parsedState));
