@@ -62,7 +62,7 @@ class MarketedSearch extends Component {
       window.addEventListener("beforeunload", this.sendPostState);
 
       let newUserID = this.createUniqueIdentifier();
-      
+
       this.setState({
         uniqueID : newUserID
       });
@@ -207,7 +207,7 @@ class MarketedSearch extends Component {
 
         parsedState.searchPerformed = false;
         parsedState.userQuery = "";
-  
+
         // Result state
         parsedState.movieClicked = true;
         parsedState.movieID = infoOne;
@@ -226,7 +226,7 @@ class MarketedSearch extends Component {
       let movies_array = [...this.state.top_n_movies]
       movies_array = this.populateTopMoviesFromSearch();
       if (movies_array.length < 4) {
-        movies_array = movies_array.concat(this.getContentFromPlatform("netflix"));
+        movies_array = movies_array.concat(this.getContentFromPlatform("netflix", movies_array));
       }
 
       let top_stream = this.show_this_advertisement;
@@ -247,7 +247,12 @@ class MarketedSearch extends Component {
         const newListingId = event.currentTarget.getAttribute('id');
         this.renderMovieById(newListingId);
 
-        let suggested_movies = this.populateTopMoviesFromSearch(2);
+
+        let suggested_movies = this.populateTopMoviesFromSearch();
+
+        if (suggested_movies.length < 4) {
+          suggested_movies = suggested_movies.concat(this.state.top_n_movies);
+        }
 
         let isMovie = false;
         if ('release_date' in suggested_movies[0]) {
@@ -333,9 +338,11 @@ class MarketedSearch extends Component {
     }
 
     // function is called if no results returned from search
-    getContentFromPlatform(platform) {
+    getContentFromPlatform(platform, current_array) {
       let all_content_array = this.state.all_movies.concat(this.state.all_shows).sort();
-      return all_content_array.filter(content => content.streaming_platform.includes(platform));
+      let just_titles = current_array.map(content => content.title);
+      let filtered_out_matches = all_content_array.filter(content => !just_titles.includes(content.title));
+      return filtered_out_matches.filter(content => content.streaming_platform.includes(platform));
     }
 
       // updates top streaming platform for user based on search results
@@ -378,17 +385,17 @@ class MarketedSearch extends Component {
       console.log(suggested);
       if ('release_date' in resultObject) {
         return (
-        <ClickedMovie 
-          movie={resultObject} 
-          otherResults={suggested} 
+        <ClickedMovie
+          movie={resultObject}
+          otherResults={suggested}
           resultsClickedHandler={this.movieClickedHandler}/>
         );
       }
       return (
-        <ClickedShow 
-          show={resultObject} 
-          otherResults={suggested} 
-          resultsClickedHandler={this.movieClickedHandler} 
+        <ClickedShow
+          show={resultObject}
+          otherResults={suggested}
+          resultsClickedHandler={this.movieClickedHandler}
       />);
     }
 
