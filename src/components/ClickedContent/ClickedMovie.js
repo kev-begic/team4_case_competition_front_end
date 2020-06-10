@@ -34,6 +34,7 @@ const clickedMovie = ( props ) => (
         </div>
         <br></br>
         <hr/>
+        <h2>Suggested titles:</h2>
         <div className={classes.suggested}>
             <table>
                 <tbody>

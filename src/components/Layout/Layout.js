@@ -6,7 +6,7 @@ import classes from './Layout.module.css';
 const layout = ( props ) => (
     <Aux>
         <div className={classes.Centered}> Synchronous Sages | Platform Picker </div>
-        <img src="https://rb.gy/g0byiw"></img>
+        <img src="images/rv-logo.png"></img>
         <hr />
         <main className={classes.Content}>
             {props.children}
