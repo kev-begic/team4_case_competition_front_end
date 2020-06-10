@@ -1,9 +1,12 @@
 import React from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import './ClickedContent.module.css';
-import classes from './ClickedContent.module.css';
+import SingleMovie from '../results/SingleResult/SingleMovie'
+import classes from './ClickedContent.module.css'
+import SingleShow from '../results/SingleResult/SingleShow'
 
 const clickedMovie = ( props ) => (
+
     <Aux>
         <div>
             <h1>{props.movie.title}</h1>
@@ -27,17 +30,40 @@ const clickedMovie = ( props ) => (
             <p>Released: {props.movie.release_date}</p>
             <p>Streaming Platforms: {props.movie.streaming_platform.join(", ")}</p>
             <p>Production Companies: {props.movie.production_companies.join(", ")}</p>
-            <br></br>
             <p>Overview: {props.movie.overview}</p>    
         </div>
+        <br></br>
         <hr/>
-        <div>
-            <h1> TODO TODO TODO</h1>
-            TODO: Take in clicked_movie_state.movies_on_platform
-            as a props, and list them all as other SingleMovie / SingleShows
-            here
+        <div className={classes.suggested}>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            {getDisplay(props.otherResults[0])}
+                            
+                        </td>
+                        <td>
+                            {getDisplay(props.otherResults[1])}
+                        </td>
+                        <td>
+                            {getDisplay(props.otherResults[2])}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </Aux>
 );
+
+let getDisplay = (object) => {
+    let result;
+    console.log(object);
+    if("release_date" in object){
+        result = <SingleMovie movie={object} />;
+    } else{
+        result = <SingleShow show={object} />;
+    }
+    return(result);
+}
 
 export default clickedMovie;
