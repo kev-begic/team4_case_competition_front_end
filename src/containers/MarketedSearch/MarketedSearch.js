@@ -68,7 +68,7 @@ class MarketedSearch extends Component {
       });
 
       console.log("sending new userID to endpoint1");
-      // postUserID(newUserID);
+      postUserID(newUserID);
       console.log(newUserID);
     }
 
@@ -357,7 +357,7 @@ class MarketedSearch extends Component {
     };
 
     render() {
-      const {moviesLoaded, showsLoaded, allLoaded} = this.state;
+      const { moviesLoaded, showsLoaded } = this.state;
 
       if (!moviesLoaded && !showsLoaded) {
         return <div>Hang tight, we're doing awesome stuff...</div>
