@@ -30,9 +30,9 @@ const clickedMovie = ( props ) => (
             <p>Released: {props.movie.release_date}</p>
             <p>Streaming Platforms: {props.movie.streaming_platform.join(", ")}</p>
             <p>Production Companies: {props.movie.production_companies.join(", ")}</p>
-            <br></br>
             <p>Overview: {props.movie.overview}</p>    
         </div>
+        <br></br>
         <hr/>
         <div className={classes.suggested}>
             <table>

@@ -30,9 +30,10 @@ const clickedShow = ( props ) => (
             <br></br>
             <p>Streaming Platforms: {props.show.streaming_platform.join(", ")}</p>
             <p>Production Companies: {props.show.production_companies.join(", ")}</p>
-            <br></br>
             <p>Overview: {props.show.overview}</p>
         </div>
+        <br></br>
+        <hr></hr>
         <div className={classes.suggested}>
             <table>
                 <tbody>
