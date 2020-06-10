@@ -1,19 +1,17 @@
 import React, { Component } from 'react';
+
 import Aux from '../../hoc/Aux/Aux'
 import SearchFunction from '../../components/SearchFunction/SearchFunction';
 import Advertisement from '../../components/Advertisement/Advertisement';
 import Results from '../../components/results/Results'
-// import getMovie from '../../api/get/getMovie'
-// import getMovieID from '../../api/get/getMovieID'
-// import getShow from '../../api/get/getShow'
-// import getShowID from '../../api/get/getShowID'
+import ClickedMovie from '../../components/ClickedContent/ClickedMovie';
+import ClickedShow from '../../components/ClickedContent/ClickedShow';
+
 import postUserID from '../../api/post/postUserID'
 import postState from '../../api/post/postState'
 
 class MarketedSearch extends Component {
-    // Full state
     state = {
-
         all_movies: [],
         all_shows: [],
 
@@ -31,29 +29,66 @@ class MarketedSearch extends Component {
 
         clicked_movie_state : {
             movie_clicked: false, // movieClicked
+            is_movie: false,
             clicked_movie_id : "", // movieID
             clicked_movie_obj: { },
-            streaming_platform : "netflix", // taken from max of top_n_movies
+            streaming_platform : "hbo", // taken from max of top_n_movies
             movies_on_platform : []
         }
     };
 
-    // Send POST request to back-end
-    sendPostState() {
-      console.log('sending state');
+    parseState() {
+      let parsedState = { };
+
+      parsedState.userID = this.state.uniqueID;
+      parsedState.topStreamingPlatformFromSearch = this.state.show_this_advertisement;
+
+      parsedState.searchPerformed = this.state.search_state.is_search_performed;
+      parsedState.userQuery = this.state.search_state.user_query;
+
+      parsedState.movieClicked = this.state.clicked_movie_state.movie_clicked;
+      parsedState.moveID = this.state.clicked_movie_state.clicked_movie_id;
+      parsedState.movieStreamingPlatform = this.state.clicked_movie_state.streaming_platform;
+
+      return JSON.stringify(parsedState);
     }
 
-    componentWillMount() {
-      this.renderMovies();
-      this.renderShows();
+    sendPostState() {
+      console.log('sending updated state to endpoing2');
+      let sendState = this.parseState();
+      console.log(sendState);
+      // TODO: Send to endpoint 
+    }
+
+    // Source: https://www.w3resource.com/javascript-exercises/javascript-math-exercise-23.php
+    createUniqueIdentifier() {
+      let dt = new Date().getTime();
+      let uuid = 'xxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = (dt + Math.random()*16)%16 | 0;
+          dt = Math.floor(dt/16);
+          return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+      });
+      return uuid;
     }
 
     componentDidMount() {
-      window.addEventListener("beforeunload", this.sendStateToBackEnd);
+      this.renderMovies();
+      this.renderShows();
+      
+      window.addEventListener("beforeunload", this.sendPostState);
+
+      let newUserID = this.createUniqueIdentifier();
+      this.setState({
+        uniqueID : newUserID
+      });
+
+      // TODO: Send uniqueID to endpoint
+      console.log("sending new userID to endpoint1");
+      console.log(newUserID);
     }
-    
+
     componentWillUnmount() {
-      window.removeEventListener("beforeunload", this.sendStateToBackEnd);
+      window.removeEventListener("beforeunload", this.sendPostState);
     }
 
     // Clears search_state
@@ -62,7 +97,7 @@ class MarketedSearch extends Component {
           ...this.state.search_state
       };
       
-      updatedSearchState.user_query = " ";
+      updatedSearchState.user_query = "";
       updatedSearchState.is_search_performed = false;
 
       return updatedSearchState;
@@ -75,9 +110,11 @@ class MarketedSearch extends Component {
       };
 
       updatedMovieState.movie_clicked = false;
+      updatedMovieState.is_movie = false;
       updatedMovieState.clicked_movie_id = " ";
-      updatedMovieState.top_streaming_platform = "netflix";
+      updatedMovieState.top_streaming_platform = "hbo";
       updatedMovieState.movies_on_platform = [ ];
+      updatedMovieState.clicked_movie_obj = { };
 
       return updatedMovieState;
     }
@@ -95,7 +132,7 @@ class MarketedSearch extends Component {
           });
     }
 
-    renderMovieById(id) {
+    renderMovieById (id) {
       fetch('https://casecomp.konnectrv.io/movie/' + id)
           .then((response) => response.json())
           .then((responseJson) => {
@@ -104,7 +141,8 @@ class MarketedSearch extends Component {
                 ...prevState.clicked_movie_state,
                 clicked_movie_obj : responseJson,
                 streaming_platform : responseJson.streaming_platform.join(" ")
-              }
+              },
+              show_this_advertisement: responseJson.streaming_platform[0]
             }))
           })
           .catch((error) => {
@@ -129,8 +167,14 @@ class MarketedSearch extends Component {
       fetch('https://casecomp.konnectrv.io/show/' + id)
           .then((response) => response.json())
           .then((responseJson) => {
-            this.setState({
-              clicked_show_obj : responseJson }) // Not yet in state
+            this.setState(prevState => ({
+              clicked_movie_state : {
+                ...prevState.clicked_movie_state,
+                clicked_movie_obj : responseJson,
+                streaming_platform : responseJson.streaming_platform.join(" ")
+              },
+              show_this_advertisement: responseJson.streaming_platform[0]
+            }))
           })
           .catch((error) => {
             console.error(error);
@@ -171,16 +215,24 @@ class MarketedSearch extends Component {
       this.setState({
         search_state : updatedSearchState,
         top_n_movies : movies_array,
-        show_this_advertisement : top_stream
-      });
+        show_this_advertisement : top_stream,
+        clicked_movie_state: this.resetMovieState()
+      }, this.sendPostState());
     }
 
     movieClickedHandler = (event) => {
+        console.log("begin movie click handler");
         const newListingId = event.currentTarget.getAttribute('id');
         this.renderMovieById(newListingId);
 
         let suggested_movies = this.populateTopMoviesFromSearch(2);
-        suggested_movies.shift();
+
+        let isMovie = false;
+        if ('release_date' in suggested_movies[0]) {
+          isMovie = true;
+        }
+
+        suggested_movies.slice(1, 4);
 
         let updatedResult = {
             ...this.state.clicked_movie_state
@@ -189,11 +241,13 @@ class MarketedSearch extends Component {
         updatedResult.clicked_movie_id = newListingId;
         updatedResult.movie_clicked = true;
         updatedResult.movies_on_platform = suggested_movies;
+        updatedResult.is_movie = isMovie;
 
         this.setState({
             clicked_movie_state : updatedResult, 
             search_state : this.resetSearchState()
-        });
+        }, this.sendPostState());
+        console.log("end movie click handler");
     };
 
     // based on user search query, get 10 matching movies/shows to display
@@ -216,6 +270,11 @@ class MarketedSearch extends Component {
         let join_query = query_array.join(" ");
         let just_titles = exact_matches.map(movie => movie.title);
         let filtered_out_matches = this.state.all_movies.filter(movie => !just_titles.includes(movie.title));
+
+        /*
+          TODO: Append all_shows to filtered_out_matches (currently only movies)
+        */
+
         let new_matches = filtered_out_matches.filter(movie => movie.title.toLowerCase().includes(join_query.toLowerCase()));
         // combine original matches with new matches
         let joined_array = exact_matches.concat(new_matches);
@@ -251,25 +310,51 @@ class MarketedSearch extends Component {
         return highest_tally;
     }
 
+    determineClickedContent() {
+      let resultObject;
+      for ( let i = 0; i < this.state.top_n_movies.length; ++i ) {
+        if ( this.state.top_n_movies[i].imdb === this.state.clicked_movie_state.clicked_movie_id) {
+          resultObject = this.state.top_n_movies[i];
+        }
+      }
+
+      if ('release_date' in resultObject) {
+        return (<ClickedMovie movie={resultObject} />);
+      }
+      return (<ClickedShow show={resultObject} />);
+    }
+
+    determineConditionalRender () {
+      console.log("calling conditionalRender");
+
+      if ( !this.state.clicked_movie_state.movie_clicked ) {
+        return (
+          <Results
+            results={this.state.top_n_movies}
+            resultsClickedHandler={this.movieClickedHandler} /> 
+        );
+      };
+
+      return this.determineClickedContent();
+    };
+
     render() {
       const {moviesLoaded, showsLoaded} = this.state;
 
       if (!moviesLoaded && !showsLoaded) {
         return <div>Hang tight, we're doing awesome stuff...</div>
       } else {
+        let bottom = this.determineConditionalRender();
         return(
             <Aux>
               <Advertisement 
-                streamingPlatform={this.state.show_this_advertisement}/>
+                streamingPlatform={this.state.show_this_advertisement} />
               <SearchFunction
-                  searchState={this.state.search_state.user_query}
-                  searchChangeHandler={this.searchQueryChangedHandler}
-                  searchPerformedHandler={this.searchPerformedChangedHandler}
-                  pressEnter={this.pressEnterHandler} />
-              <Results
-                  results={this.state.top_n_movies}
-                  resultsClickedHandler={this.movieClickedHandler}
-                />
+                searchState={this.state.search_state.user_query}
+                searchChangeHandler={this.searchQueryChangedHandler}
+                searchPerformedHandler={this.searchPerformedChangedHandler}
+                pressEnter={this.pressEnterHandler} />
+              { bottom }
             </Aux>
         );
         }
