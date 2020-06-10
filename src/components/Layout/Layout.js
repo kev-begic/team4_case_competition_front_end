@@ -5,7 +5,7 @@ import classes from './Layout.module.css';
 
 const layout = ( props ) => (
     <Aux>
-        <div>Team 4 Logo/Name | Title | Red Ventures Logo</div>
+        <div className={classes.Centered}>Team 4 Logo/Name | Title | Red Ventures Logo</div>
         <hr />
         <main className={classes.Content}>
             {props.children}

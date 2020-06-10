@@ -10,11 +10,7 @@ let fillTopTen = (array, clickHandler) => {
     let num = 10;
 
     for(const [index, value] of array.slice(0, num).entries()){
-<<<<<<< HEAD
-        if("release_date" in value){
-=======
         if ('release_date' in value) {
->>>>>>> 01855cdde98b7e5373ad94c3d11668cfbfbdc767
             result.push(<SingleMovie key={Math.random()} movie={value} resultsClickedHandler={clickHandler}/>);
         } else {
             result.push(<SingleShow key={Math.random()} show={value} resultsClickedHandler={clickHandler}/>);

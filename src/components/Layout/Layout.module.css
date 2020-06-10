@@ -1,3 +1,8 @@
 .Content { 
     margin: 16px;
 }
+
+.Centered {
+    text-align: center;
+    align-content: center;
+}
