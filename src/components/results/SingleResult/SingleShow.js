@@ -7,7 +7,8 @@ import Aux from '../../../hoc/Aux/Aux';
 
 const singleShow = ( props ) => (
     <Aux>
-        <div 
+        <div
+            id={props.show.imdb}
             className={classes.box}
             onClick={props.resultsClickedHandler} >
             <h1>{props.show.title}</h1>
