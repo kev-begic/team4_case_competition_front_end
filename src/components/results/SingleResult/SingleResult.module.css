@@ -25,10 +25,10 @@ li {
 }
 
 /* Boxes each show/movie result */
-.box {
+/* .box {
     border: 2px solid black;
     padding: 10px;
-}
+} */
 
 div {
   cursor: pointer;

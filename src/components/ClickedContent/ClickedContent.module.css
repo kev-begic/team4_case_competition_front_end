@@ -14,16 +14,20 @@ p {
 table {
     border-collapse: collapse;
     width: 100%;
+    table-layout: fixed;
 }
 
 
 .suggested td {
     width: 33%;
-    height: 100%
+    border: 3px solid rgb(2, 2, 2);
+    /* height: 100% */
 }
 
 .suggested tr {
-    height: 150pt;
+    height: 100pt;
+    min-height: 150pt;
+    max-height: 150pt;
 }
 
 .suggested h1{

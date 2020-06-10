@@ -35,6 +35,7 @@ const clickedShow = ( props ) => (
         </div>
         <br></br>
         <hr></hr>
+        <h2>Suggested titles:</h2>
         <div className={classes.suggested}>
             <table>
                 <tbody>
