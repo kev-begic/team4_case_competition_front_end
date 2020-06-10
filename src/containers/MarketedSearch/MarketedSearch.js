@@ -10,7 +10,7 @@ const ALL_CONTENT = [{
     "release_date": "2019-09-21",
     "rating": "NR",
     "streaming_platform": [
-      "hbo"
+      "netflix"
     ],
     "production_companies": [
       "42",
@@ -29,7 +29,7 @@ const ALL_CONTENT = [{
     "release_date": "2019-09-19",
     "rating": "NR",
     "streaming_platform": [
-      "hbo"
+      "amazon_prime"
     ],
     "production_companies": [
       "Copperheart Entertainment"
@@ -46,7 +46,7 @@ const ALL_CONTENT = [{
     "release_date": "2019-10-11",
     "rating": "NR",
     "streaming_platform": [
-      "hbo", "hbo"
+      "netflix", "hbo"
     ],
     "production_companies": [
       "Sony Pictures Television",
@@ -147,14 +147,13 @@ const clicked_test = [{
 
 class MarketedSearch extends Component {
 
-    // callBack that automatically sends event
     state = {
         uniqueID: 0,
-        top_n_movies: [ ], //subset of ALL_CONTENT
+        top_n_movies: [ ],
         show_this_advertisement: "netflix",
 
         search_state : {
-            user_query: " ",
+            user_query: "",
             is_search_performed: false
         },
 
@@ -227,13 +226,14 @@ class MarketedSearch extends Component {
     }
 
     movieClickedHandler = (event) => {
-      let updatedMovieClickedState = {
-          ...this.state.clicked_movie_state
-      };
-      updatedMovieClickedState.clicked_movie_id = 7;
-      this.setState({
-          clicked_movie_id : updatedMovieClickedState
-      });
+        console.log("here");
+        let updatedMovieClickedState = {
+            ...this.state.clicked_movie_state
+        };
+        updatedMovieClickedState.clicked_movie_id = 7;
+        this.setState({
+            clicked_movie_id : updatedMovieClickedState
+        });
     };
 
     // based on user search query, get 10 matching movies/shows to display
@@ -284,37 +284,9 @@ class MarketedSearch extends Component {
         }
     }
 
-    // Updates search_state on user button click of enter
-    searchPerformedChangedHandler = () => {
-        this.resetSearchState();
-
-        let updatedSearchState = {
-            ...this.state.search_state
-        };
-
-        console.log("search performed");
-
-        updatedSearchState.is_search_performed = true;
-
-        let movies_array = {
-          ...this.state.top_n_movies
-        };
-
-        movies_array = this.populateTopMoviesFromSearch();
-
-        this.setState({
-            top_n_movies : movies_array,
-            search_state : updatedSearchState,
-            clicked_movie_state : this.resetMovieState()
-        });
-        
-        console.log("movies coming");
-        console.log(movies_array);
-        console.log(this.state.top_n_movies);
-    }
-
     // updates top streaming platform for user based on search results
     findTopStreamingPlatform(movies_array) {
+      console.log("nerd");
       let platform_map = new Map();
       platform_map.set("hbo", 0);
       platform_map.set("amazon_prime", 0);
