@@ -3,9 +3,9 @@ import Aux from '../../hoc/Aux/Aux';
 import './ClickedContent.module.css';
 import SingleMovie from '../results/SingleResult/SingleMovie'
 import classes from './ClickedContent.module.css'
+import SingleShow from '../results/SingleResult/SingleShow'
 
 const clickedMovie = ( props ) => (
-
 
     <Aux>
         <div>
@@ -39,14 +39,14 @@ const clickedMovie = ( props ) => (
                 <tbody>
                     <tr>
                         <td>
-                            <SingleMovie movie={props.otherResults[0]} />
+                            {getDisplay(props.otherResults[0])}
                             
                         </td>
                         <td>
-                            <SingleMovie movie={props.otherResults[1]} />
+                            {getDisplay(props.otherResults[1])}
                         </td>
                         <td>
-                            <SingleMovie movie={props.otherResults[2]} />
+                            {getDisplay(props.otherResults[2])}
                         </td>
                     </tr>
                 </tbody>
@@ -54,5 +54,16 @@ const clickedMovie = ( props ) => (
         </div>
     </Aux>
 );
+
+let getDisplay = (object) => {
+    let result;
+    console.log(object);
+    if("release_date" in object){
+        result = <SingleMovie movie={object} />;
+    } else{
+        result = <SingleShow show={object} />;
+    }
+    return(result);
+}
 
 export default clickedMovie;
