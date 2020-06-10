@@ -1,4 +1,4 @@
-# Team 4 [insert name here] 
+# Team 4 "The Synchronous Sages"
 
 ## How to use the downloaded files after clone
 
