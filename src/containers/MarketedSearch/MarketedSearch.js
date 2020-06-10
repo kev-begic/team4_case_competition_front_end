@@ -346,7 +346,7 @@ class MarketedSearch extends Component {
       if ('release_date' in resultObject) {
         return (<ClickedMovie movie={resultObject} otherResults={suggested}/>);
       }
-      return (<ClickedShow show={resultObject} />);
+      return (<ClickedShow show={resultObject} otherResults={suggested} />);
     }
 
     determineConditionalRender () {
