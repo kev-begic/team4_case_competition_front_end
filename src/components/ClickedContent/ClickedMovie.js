@@ -3,9 +3,6 @@ import Aux from '../../hoc/Aux/Aux';
 import './ClickedContent.module.css';
 import classes from './ClickedContent.module.css';
 
-
-
-
 const clickedMovie = ( props ) => (
     <Aux>
         <div>
@@ -31,10 +28,15 @@ const clickedMovie = ( props ) => (
             <p>Streaming Platforms: {props.movie.streaming_platform.join(", ")}</p>
             <p>Production Companies: {props.movie.production_companies.join(", ")}</p>
             <br></br>
-            <p>Overview: {props.movie.overview}</p>
-
-            
-            </div>
+            <p>Overview: {props.movie.overview}</p>    
+        </div>
+        <hr/>
+        <div>
+            <h1> TODO TODO TODO</h1>
+            TODO: Take in clicked_movie_state.movies_on_platform
+            as a props, and list them all as other SingleMovie / SingleShows
+            here
+        </div>
     </Aux>
 );
 

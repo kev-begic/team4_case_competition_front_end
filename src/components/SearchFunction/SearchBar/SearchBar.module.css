@@ -1,3 +1,6 @@
-.MakesRed {
-    border: 2px solid red;
+.SearchBar {
+    width: 50%;
+    height: 40px;
+    margin-right: 10px;
+    font-size: 20px;
 }

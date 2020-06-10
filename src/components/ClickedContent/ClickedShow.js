@@ -31,9 +31,7 @@ const clickedShow = ( props ) => (
             <p>Production Companies: {props.show.production_companies.join(", ")}</p>
             <br></br>
             <p>Overview: {props.show.overview}</p>
-
-            
-            </div>
+        </div>
     </Aux>
 );
 

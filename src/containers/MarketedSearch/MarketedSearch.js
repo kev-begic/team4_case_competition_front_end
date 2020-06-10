@@ -2,173 +2,259 @@ import React, { Component } from 'react';
 
 import Aux from '../../hoc/Aux/Aux'
 import SearchFunction from '../../components/SearchFunction/SearchFunction';
+import Advertisement from '../../components/Advertisement/Advertisement';
 import Results from '../../components/results/Results'
+import ClickedMovie from '../../components/ClickedContent/ClickedMovie';
+import ClickedShow from '../../components/ClickedContent/ClickedShow';
 
-// Array of all movies and shows required for initial search
-const ALL_CONTENT = [{
-    "title": "In the Shadow of the Moon",
-    "release_date": "2019-09-21",
-    "rating": "NR",
-    "streaming_platform": [
-      "netflix"
-    ],
-    "production_companies": [
-      "42",
-      "Automatik Entertainment",
-      "Nightshade Productions"
-    ],
-    "imdb": "tt8110640",
-    "vote_count": 196,
-    "vote_average": 6.2,
-    "original_language": "en",
-    "popularity": 48.123,
-    "overview": "In 1988, Philadelphia police officer Thomas \"Locke\" Lockhart, hungry to become a detective, begins tracking a serial killer whose crimes defy scientific explanation. When the killer mysteriously resurfaces nine years later, Locke's obsession with finding the truth threatens to destroy his career, his family, and possibly his sanity."
-  },
-  {
-    "title": "In the Tall Grass",
-    "release_date": "2019-09-19",
-    "rating": "NR",
-    "streaming_platform": [
-      "netflix"
-    ],
-    "production_companies": [
-      "Copperheart Entertainment"
-    ],
-    "imdb": "tt4687108",
-    "vote_count": 301,
-    "vote_average": 5.5,
-    "original_language": "en",
-    "popularity": 72.919,
-    "overview": "After hearing a young boy's cry for help, a sister and brother venture into a vast field of tall grass in Kansas but soon discover there may be no way out ... and that something evil lurks within."
-  },
-  {
-    "title": "El Camino: A Breaking Bad Movie",
-    "release_date": "2019-10-11",
-    "rating": "NR",
-    "streaming_platform": [
-      "netflix", "hbo"
-    ],
-    "production_companies": [
-      "Sony Pictures Television",
-      "High Bridge Productions",
-      "Gran Via Productions"
-    ],
-    "imdb": "tt9243946",
-    "vote_count": 580,
-    "vote_average": 7.3,
-    "original_language": "en",
-    "popularity": 140.641,
-    "overview": "In the wake of his dramatic escape from captivity, Jesse Pinkman must come to terms with his past in order to forge some kind of future."
-
-  },
-
-  {
-    "title": "Inner",
-    "release_date": "2019-10-11",
-    "rating": "NR",
-    "streaming_platform": [
-      "netflix", "amazon_prime"
-    ],
-    "production_companies": [
-      "Sony Pictures Television",
-      "High Bridge Productions",
-      "Gran Via Productions"
-    ],
-    "imdb": "tt9243946",
-    "vote_count": 580,
-    "vote_average": 7.3,
-    "original_language": "en",
-    "popularity": 140.641,
-    "overview": "In the wake of his dramatic escape from captivity, Jesse Pinkman must come to terms with his past in order to forge some kind of future."
-
-  },
-
-  {
-    "title": "Park",
-    "release_date": "2019-10-11",
-    "rating": "NR",
-    "streaming_platform": [
-      "netflix"
-    ],
-    "production_companies": [
-      "Sony Pictures Television",
-      "High Bridge Productions",
-      "Gran Via Productions"
-    ],
-    "imdb": "tt9243946",
-    "vote_count": 580,
-    "vote_average": 7.3,
-    "original_language": "en",
-    "popularity": 140.641,
-    "overview": "In the wake of his dramatic escape from captivity, Jesse Pinkman must come to terms with his past in order to forge some kind of future."
-
-  }];
+import postUserID from '../../api/post/postUserID'
+import postState from '../../api/post/postState'
 
 class MarketedSearch extends Component {
-
-    // Full state
     state = {
-        uniqueID: 0,
-        top_n_movies: [ ], //subset of ALL_CONTENT
-        movie_clicked: false,
-        show_this_advertisement: "id_for_advertisement",
+        all_movies: [],
+        all_shows: [],
+
+        moviesLoaded: false,
+        showsLoaded: false,
+
+        uniqueID: 0, // userID 
+        top_n_movies: [ ],
+        show_this_advertisement: "netflix", //topStreamingPlatformForSearch
 
         search_state : {
-            user_query: "Search",
-            is_search_performed: false
+            user_query: "", // userQuery
+            is_search_performed: false // searchPerformed
         },
 
         clicked_movie_state : {
-            clicked_movie_id : "some_string_12kjbk31j4",
-            top_streaming_platform : "hbo, amazon_prime, etc", // taken from max of top_n_movies
-            movies_on_platform : [ ]
+            movie_clicked: false, // movieClicked
+            is_movie: false,
+            clicked_movie_id : "", // movieID
+            clicked_movie_obj: { },
+            streaming_platform : "hbo", // taken from max of top_n_movies
+            movies_on_platform : []
         }
     };
 
+    parseState() {
+      let parsedState = { };
+
+      parsedState.userID = this.state.uniqueID;
+      parsedState.topStreamingPlatformFromSearch = this.state.show_this_advertisement;
+
+      parsedState.searchPerformed = this.state.search_state.is_search_performed;
+      parsedState.userQuery = this.state.search_state.user_query;
+
+      parsedState.movieClicked = this.state.clicked_movie_state.movie_clicked;
+      parsedState.moveID = this.state.clicked_movie_state.clicked_movie_id;
+      parsedState.movieStreamingPlatform = this.state.clicked_movie_state.streaming_platform;
+
+      return JSON.stringify(parsedState);
+    }
+
+    sendPostState() {
+      console.log('sending updated state to endpoing2');
+      let sendState = this.parseState();
+      console.log(sendState);
+      // TODO: Send to endpoint 
+    }
+
+    // Source: https://www.w3resource.com/javascript-exercises/javascript-math-exercise-23.php
+    createUniqueIdentifier() {
+      let dt = new Date().getTime();
+      let uuid = 'xxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = (dt + Math.random()*16)%16 | 0;
+          dt = Math.floor(dt/16);
+          return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+      });
+      return uuid;
+    }
+
+    componentDidMount() {
+      this.renderMovies();
+      this.renderShows();
+      
+      window.addEventListener("beforeunload", this.sendPostState);
+
+      let newUserID = this.createUniqueIdentifier();
+      this.setState({
+        uniqueID : newUserID
+      });
+
+      // TODO: Send uniqueID to endpoint
+      console.log("sending new userID to endpoint1");
+      console.log(newUserID);
+    }
+
+    componentWillUnmount() {
+      window.removeEventListener("beforeunload", this.sendPostState);
+    }
+
+    // Clears search_state
+    resetSearchState = () => {
+      let updatedSearchState = {
+          ...this.state.search_state
+      };
+      
+      updatedSearchState.user_query = "";
+      updatedSearchState.is_search_performed = false;
+
+      return updatedSearchState;
+    }   
+
+    // Clears clicked_movie_state
+    resetMovieState = () => {
+      let updatedMovieState = {
+          ...this.state.clicked_movie_state
+      };
+
+      updatedMovieState.movie_clicked = false;
+      updatedMovieState.is_movie = false;
+      updatedMovieState.clicked_movie_id = " ";
+      updatedMovieState.top_streaming_platform = "hbo";
+      updatedMovieState.movies_on_platform = [ ];
+      updatedMovieState.clicked_movie_obj = { };
+
+      return updatedMovieState;
+    }
+
+    renderMovies() {
+      fetch('https://casecomp.konnectrv.io/movie')
+          .then((response) => response.json())
+          .then((responseJson) => {
+            this.setState({
+              moviesLoaded: true,
+              all_movies : responseJson })
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+    }
+
+    renderMovieById (id) {
+      fetch('https://casecomp.konnectrv.io/movie/' + id)
+          .then((response) => response.json())
+          .then((responseJson) => {
+            this.setState(prevState => ({
+              clicked_movie_state : {
+                ...prevState.clicked_movie_state,
+                clicked_movie_obj : responseJson,
+                streaming_platform : responseJson.streaming_platform.join(" ")
+              },
+              show_this_advertisement: responseJson.streaming_platform[0]
+            }))
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+    }
+
+    renderShows() {
+      fetch('https://casecomp.konnectrv.io/show')
+          .then((response) => response.json())
+          .then((responseJson) => {
+            this.setState({
+              showsLoaded: true,
+              all_shows : responseJson })
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+    }
+
+    renderShowById(id) {
+      fetch('https://casecomp.konnectrv.io/show/' + id)
+          .then((response) => response.json())
+          .then((responseJson) => {
+            this.setState(prevState => ({
+              clicked_movie_state : {
+                ...prevState.clicked_movie_state,
+                clicked_movie_obj : responseJson,
+                streaming_platform : responseJson.streaming_platform.join(" ")
+              },
+              show_this_advertisement: responseJson.streaming_platform[0]
+            }))
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+    }
+
+    // Method to allow Enter-Key to update search_state.user_query
+    pressEnterHandler = ( event ) => {
+      if (event.key === 'Enter') {
+          this.searchPerformedChangedHandler();
+      }
+    }
+
     searchQueryChangedHandler = (event) => {
-        const query = event.target.value;
-        let updatedSearchState = {
-            ...this.state.search_state
-        };
-        updatedSearchState.user_query = query;
-        this.setState({
-            search_state : updatedSearchState
-        });
-    };
+      const query = event.target.value;
+      let updatedSearchState = {
+          ...this.state.search_state
+      };
+      updatedSearchState.user_query = query;
+      this.setState({
+          search_state : updatedSearchState
+      });
+    }
 
     searchPerformedChangedHandler = (event) => {
-        let updatedSearchState = {
-            ...this.state.search_state
-        };
-        updatedSearchState.is_search_performed = true;
-        console.log("clicked button")
-        console.log(updatedSearchState.user_query);
-        let movies_array = [...this.state.top_n_movies]
-        movies_array = this.populateTopMoviesFromSearch();
-        let top_stream = this.show_this_advertisement;
-        top_stream = this.findTopStreamingPlatform(movies_array);
-        this.setState({
-          search_state : updatedSearchState,
-          top_n_movies : movies_array,
-          show_this_advertisement : top_stream
-        });
+      let updatedSearchState = {
+          ...this.state.search_state
+      };
+
+      updatedSearchState.is_search_performed = true;
+
+      let movies_array = [...this.state.top_n_movies]
+      movies_array = this.populateTopMoviesFromSearch(10);
+
+      let top_stream = this.show_this_advertisement;
+      top_stream = this.findTopStreamingPlatform(movies_array);
+
+      this.setState({
+        search_state : updatedSearchState,
+        top_n_movies : movies_array,
+        show_this_advertisement : top_stream,
+        clicked_movie_state: this.resetMovieState()
+      }, this.sendPostState());
     }
 
     movieClickedHandler = (event) => {
-      let updatedMovieClickedState = {
-          ...this.state.clicked_movie_state
-      };
-      updatedMovieClickedState.clicked_movie_id = 7;
-      this.setState({
-          clicked_movie_id : updatedMovieClickedState
-      });
+        console.log("begin movie click handler");
+        const newListingId = event.currentTarget.getAttribute('id');
+        this.renderMovieById(newListingId);
+
+        let suggested_movies = this.populateTopMoviesFromSearch(2);
+
+        let isMovie = false;
+        if ('release_date' in suggested_movies[0]) {
+          isMovie = true;
+        }
+
+        suggested_movies.slice(1, 4);
+
+        let updatedResult = {
+            ...this.state.clicked_movie_state
+        };
+
+        updatedResult.clicked_movie_id = newListingId;
+        updatedResult.movie_clicked = true;
+        updatedResult.movies_on_platform = suggested_movies;
+        updatedResult.is_movie = isMovie;
+
+        this.setState({
+            clicked_movie_state : updatedResult, 
+            search_state : this.resetSearchState()
+        }, this.sendPostState());
+        console.log("end movie click handler");
     };
 
     // based on user search query, get 10 matching movies/shows to display
-    populateTopMoviesFromSearch() {
+    populateTopMoviesFromSearch( numMatches ) {
       // matches user_query to all titles in the ALL_CONTENT array
-      let exact_matches = ALL_CONTENT.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
-      if (exact_matches.length < 10) {
+      let exact_matches = this.state.all_shows.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
+      if (exact_matches.length < numMatches ) {
         let query_array = this.state.search_state.user_query.split(" ");
         return this.getMoreMatchingTitles(exact_matches, query_array);
       } else {
@@ -183,7 +269,12 @@ class MarketedSearch extends Component {
       } else {
         let join_query = query_array.join(" ");
         let just_titles = exact_matches.map(movie => movie.title);
-        let filtered_out_matches = ALL_CONTENT.filter(movie => !just_titles.includes(movie.title));
+        let filtered_out_matches = this.state.all_shows.filter(movie => !just_titles.includes(movie.title));
+
+        /*
+          TODO: Append all_movies to filtered_out_matches (currently only movies)
+        */
+
         let new_matches = filtered_out_matches.filter(movie => movie.title.toLowerCase().includes(join_query.toLowerCase()));
         // combine original matches with new matches
         let joined_array = exact_matches.concat(new_matches);
@@ -193,12 +284,14 @@ class MarketedSearch extends Component {
       }
     }
 
-    // updates top streaming platform for user based on search results
+      // updates top streaming platform for user based on search results
     findTopStreamingPlatform(movies_array) {
       let platform_map = new Map();
+
       platform_map.set("hbo", 0);
       platform_map.set("amazon_prime", 0);
       platform_map.set("netflix", 0);
+
       for (var movie of movies_array) {
         let platform_array = movie.streaming_platform;
         for (var platform of platform_array){
@@ -206,37 +299,65 @@ class MarketedSearch extends Component {
           platform_map.set(platform, curr_total + 1);
         }
       }
-      console.log(platform_map);
-      var get_entries = platform_map.entries();
+
+      let get_entries = platform_map.entries();
       let highest_tally = "hbo";
-      for(var ele of get_entries)
+
+      for(let ele of get_entries)
         if (ele[1] > platform_map.get(highest_tally)) {
           highest_tally = ele[0];
         }
         return highest_tally;
     }
 
+    determineClickedContent() {
+      let resultObject;
+      for ( let i = 0; i < this.state.top_n_movies.length; ++i ) {
+        if ( this.state.top_n_movies[i].imdb === this.state.clicked_movie_state.clicked_movie_id) {
+          resultObject = i;
+        }
+      }
+
+      if (this.state.top_n_movies[resultObject].hasOwnProperty('rating')) {
+        return (<ClickedMovie movie={resultObject} />);
+      }
+      return (<ClickedShow show={resultObject} />);
+    }
+
+    determineConditionalRender () {
+      console.log("calling conditionalRender");
+
+      if ( !this.state.clicked_movie_state.movie_clicked ) {
+        return (
+          <Results
+            results={this.state.top_n_movies}
+            resultsClickedHandler={this.movieClickedHandler} /> 
+        );
+      };
+
+      return this.determineClickedContent();
+    };
+
     render() {
+      const {moviesLoaded, showsLoaded} = this.state;
+
+      if (!moviesLoaded && !showsLoaded) {
+        return <div>Hang tight, we're doing awesome stuff...</div>
+      } else {
+        let bottom = this.determineConditionalRender();
         return(
             <Aux>
-                <SearchFunction
-                    searchState={this.state.search_state.user_query}
-                    searchChangeHandler={this.searchQueryChangedHandler}
-                    searchPerformedHandler={this.searchPerformedChangedHandler}/>
-
-                {/* change to top n movie state */}
-                <Results
-                    results={this.state.top_n_movies}
-                    resultsClickedHandler={this.movieClickedHandler}
-                 />
-
-                {/*
-                    Data Analytics by pulling from our own API
-                    - Most clicked movie
-                    - Recommended streamer provide
-                 */}
+              <Advertisement 
+                streamingPlatform={this.state.show_this_advertisement} />
+              <SearchFunction
+                searchState={this.state.search_state.user_query}
+                searchChangeHandler={this.searchQueryChangedHandler}
+                searchPerformedHandler={this.searchPerformedChangedHandler}
+                pressEnter={this.pressEnterHandler} />
+              { bottom }
             </Aux>
         );
+        }
     }
 }
 
