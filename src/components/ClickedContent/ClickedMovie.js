@@ -1,9 +1,12 @@
 import React from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import './ClickedContent.module.css';
-import classes from './ClickedContent.module.css';
+import SingleMovie from '../results/SingleResult/SingleMovie'
+import classes from './ClickedContent.module.css'
 
 const clickedMovie = ( props ) => (
+
+
     <Aux>
         <div>
             <h1>{props.movie.title}</h1>
@@ -31,11 +34,23 @@ const clickedMovie = ( props ) => (
             <p>Overview: {props.movie.overview}</p>    
         </div>
         <hr/>
-        <div>
-            <h1> TODO TODO TODO</h1>
-            TODO: Take in clicked_movie_state.movies_on_platform
-            as a props, and list them all as other SingleMovie / SingleShows
-            here
+        <div className={classes.suggested}>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <SingleMovie movie={props.otherResults[0]} />
+                            
+                        </td>
+                        <td>
+                            <SingleMovie movie={props.otherResults[1]} />
+                        </td>
+                        <td>
+                            <SingleMovie movie={props.otherResults[2]} />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </Aux>
 );

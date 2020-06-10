@@ -2,6 +2,7 @@ import React from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import './ClickedContent.module.css';
 import classes from './ClickedContent.module.css';
+import SingleShow from '../results/SingleResult/SingleShow'
 
 
 
@@ -31,6 +32,24 @@ const clickedShow = ( props ) => (
             <p>Production Companies: {props.show.production_companies.join(", ")}</p>
             <br></br>
             <p>Overview: {props.show.overview}</p>
+        </div>
+        <div className={classes.suggested}>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <SingleShow show={props.otherResults[0]} />
+                            
+                        </td>
+                        <td>
+                            <SingleShow show={props.otherResults[1]} />
+                        </td>
+                        <td>
+                            <SingleShow show={props.otherResults[2]} />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </Aux>
 );

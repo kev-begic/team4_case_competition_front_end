@@ -316,14 +316,31 @@ class MarketedSearch extends Component {
 
     determineClickedContent() {
       let resultObject;
+      let suggested = [];
       for ( let i = 0; i < this.state.top_n_movies.length; ++i ) {
         if ( this.state.top_n_movies[i].imdb === this.state.clicked_movie_state.clicked_movie_id) {
           resultObject = this.state.top_n_movies[i];
+        } else {
+          suggested.push(this.state.top_n_movies[i]);
         }
       }
 
+      // making sure there are at least three recommended movies at all times, this could be better with an
+      //algorithm based on description or some other heuristic in the future 
+      let i = 0;
+      while(suggested.length < 3){
+        let currentMovie = this.state.all_movies[i];
+        if ( !(currentMovie.imdb === this.state.clicked_movie_state.clicked_movie_id)) {
+            if (currentMovie.streaming_platform.includes(this.state.clicked_movie_state.streaming_platform)){
+              suggested.push(this.state.all_movies[i]);
+            }
+          }
+          i++;
+
+      }
+
       if ('release_date' in resultObject) {
-        return (<ClickedMovie movie={resultObject} />);
+        return (<ClickedMovie movie={resultObject} otherResults={suggested}/>);
       }
       return (<ClickedShow show={resultObject} />);
     }
