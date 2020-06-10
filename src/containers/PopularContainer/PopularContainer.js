@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
+
 import Aux from '../../hoc/Aux/Aux';
+import classes from './PopularContainer.module.css';
 
 class PopularContainer extends Component {
     state = {
@@ -87,8 +89,8 @@ class PopularContainer extends Component {
       } else {
       return (
         <Aux>
-            <span>Top showMovie: {this.state.mostClickedMovie}</span>
-            <span>Top Platform: {this.state.mostCommonPlatform}</span>
+            <span>Top Feature: {this.state.mostClickedMovie}</span>
+            <span className={classes.Capitalize}>Top Platform: {this.state.mostCommonPlatform}</span>
         </Aux>
       )
     }

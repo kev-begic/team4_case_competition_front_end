@@ -233,7 +233,6 @@ class MarketedSearch extends Component {
       this.setState({
         search_state : updatedSearchState,
         top_n_movies : movies_array,
-        show_this_advertisement : top_stream,
         clicked_movie_state: this.resetMovieState()
       }, this.sendPostState(parsedState));
     }
