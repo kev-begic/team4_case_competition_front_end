@@ -4,6 +4,10 @@ import classes from './Advertisement.module.css';
 
 const advertisement = ( props ) => {
     let advertisementLink = "https://www." + props.streamingPlatform + ".com";
+    if ( props.streamingPlatform === 'amazon_prime') {
+        advertisementLink = "https://www.amazon.com/amazonprime";
+    }
+    
     return (
         <div className={classes.Advertisement}>
             <div>
