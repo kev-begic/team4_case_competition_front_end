@@ -225,6 +225,9 @@ class MarketedSearch extends Component {
 
       let movies_array = [...this.state.top_n_movies]
       movies_array = this.populateTopMoviesFromSearch();
+      if (movies_array.length < 4) {
+        movies_array = movies_array.concat(this.getContentFromPlatform("netflix"));
+      }
 
       let top_stream = this.show_this_advertisement;
       top_stream = this.findTopStreamingPlatform(movies_array);
@@ -365,28 +368,14 @@ class MarketedSearch extends Component {
       let suggested = [];
       let resultObject = null;
       for ( let i = 0; i < this.state.top_n_movies.length; ++i ) {
-        console.log(this.state.top_n_movies[i].imdb, this.state.clicked_movie_state.clicked_movie_id);
+        console.log(this.state.clicked_movie_state.clicked_movie_id, this.state.top_n_movies[i].imdb);
         if ( this.state.top_n_movies[i].imdb === this.state.clicked_movie_state.clicked_movie_id) {
           resultObject = this.state.top_n_movies[i];
         } else {
           suggested.push(this.state.top_n_movies[i]);
         }
       }
-
-      // making sure there are at least three recommended movies at all times, this could be better with an
-      //algorithm based on description or some other heuristic in the future 
-      let i = 0;
-      while(suggested.length < 3){
-        let currentMovie = this.state.all_movies[i];
-        if ( !currentMovie ) break; 
-        if ( !(currentMovie.imdb === this.state.clicked_movie_state.clicked_movie_id)) {
-            if (currentMovie.streaming_platform.includes(this.state.clicked_movie_state.streaming_platform)){
-              suggested.push(this.state.all_movies[i]);
-            }
-          }
-          i++;
-      }
-
+      console.log(suggested);
       if ('release_date' in resultObject) {
         return (
         <ClickedMovie 
