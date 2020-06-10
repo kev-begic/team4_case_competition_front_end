@@ -253,7 +253,7 @@ class MarketedSearch extends Component {
     // based on user search query, get 10 matching movies/shows to display
     populateTopMoviesFromSearch( numMatches ) {
       // matches user_query to all titles in the ALL_CONTENT array
-      let exact_matches = this.state.all_movies.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
+      let exact_matches = this.state.all_shows.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
       if (exact_matches.length < numMatches ) {
         let query_array = this.state.search_state.user_query.split(" ");
         return this.getMoreMatchingTitles(exact_matches, query_array);
@@ -269,10 +269,10 @@ class MarketedSearch extends Component {
       } else {
         let join_query = query_array.join(" ");
         let just_titles = exact_matches.map(movie => movie.title);
-        let filtered_out_matches = this.state.all_movies.filter(movie => !just_titles.includes(movie.title));
+        let filtered_out_matches = this.state.all_shows.filter(movie => !just_titles.includes(movie.title));
 
         /*
-          TODO: Append all_shows to filtered_out_matches (currently only movies)
+          TODO: Append all_movies to filtered_out_matches (currently only movies)
         */
 
         let new_matches = filtered_out_matches.filter(movie => movie.title.toLowerCase().includes(join_query.toLowerCase()));
@@ -314,11 +314,11 @@ class MarketedSearch extends Component {
       let resultObject;
       for ( let i = 0; i < this.state.top_n_movies.length; ++i ) {
         if ( this.state.top_n_movies[i].imdb === this.state.clicked_movie_state.clicked_movie_id) {
-          resultObject = this.state.top_n_movies[i];
+          resultObject = i;
         }
       }
 
-      if ('release_date' in resultObject) {
+      if (this.state.top_n_movies[resultObject].hasOwnProperty('rating')) {
         return (<ClickedMovie movie={resultObject} />);
       }
       return (<ClickedShow show={resultObject} />);
