@@ -211,7 +211,7 @@ class MarketedSearch extends Component {
       updatedSearchState.is_search_performed = true;
 
       let movies_array = [...this.state.top_n_movies]
-      movies_array = this.populateTopMoviesFromSearch(10);
+      movies_array = this.populateTopMoviesFromSearch();
 
       let top_stream = this.show_this_advertisement;
       top_stream = this.findTopStreamingPlatform(movies_array);
@@ -256,13 +256,36 @@ class MarketedSearch extends Component {
     };
 
     // based on user search query, get 10 matching movies/shows to display
-    populateTopMoviesFromSearch( numMatches ) {
-      // matches user_query to all titles in the ALL_CONTENT array
+    populateTopMoviesFromSearch() {
+      // combines all_shows and all_movies arrays
       let all_content_array = this.state.all_movies.concat(this.state.all_shows).sort();
-      let exact_matches = all_content_array.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
-      if (exact_matches.length < numMatches ) {
-        let query_array = this.state.search_state.user_query.split(" ");
-        return this.getMoreMatchingTitles(exact_matches, query_array);
+      let exact_matches = [];
+      let query_array = this.state.search_state.user_query.toLowerCase().split(" ");
+      if (query_array.length === 1) {
+        exact_matches = all_content_array.filter(movie => movie.title.toLowerCase().split(" ")[0].includes(query_array[0]));
+      } else {
+        exact_matches = all_content_array.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
+      }
+
+      let just_titles = exact_matches.map(movie => movie.title);
+      let filtered_out_matches = all_content_array.filter(movie => !just_titles.includes(movie.title));
+      if (exact_matches.length < 10 && query_array.length > 1) {
+        let first_word_matches = filtered_out_matches.filter(movie => movie.title.toLowerCase().split(" ")[0].includes(query_array[0]));
+        let new_matches = exact_matches.concat(first_word_matches);
+        if (new_matches.length < 10) {
+          return this.getMoreMatchingTitles(new_matches, query_array);
+        } else {
+          return new_matches
+        }
+
+      } else if (exact_matches.length < 10) {
+        let new_matches = filtered_out_matches.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
+        if (new_matches.length < 10) {
+          return this.getMoreMatchingTitles(new_matches, query_array);
+        } else {
+          return new_matches
+        }
+
       } else {
         return exact_matches;
       }
@@ -277,11 +300,6 @@ class MarketedSearch extends Component {
         let join_query = query_array.join(" ");
         let just_titles = exact_matches.map(movie => movie.title);
         let filtered_out_matches = all_content_array.filter(movie => !just_titles.includes(movie.title));
-
-        /*
-          TODO: Append all_shows to filtered_out_matches (currently only movies)
-        */
-
         let new_matches = filtered_out_matches.filter(movie => movie.title.toLowerCase().includes(join_query.toLowerCase()));
         // combine original matches with new matches
         let joined_array = exact_matches.concat(new_matches);
