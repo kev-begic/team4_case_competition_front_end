@@ -23,7 +23,7 @@ const clickedShow = ( props ) => (
                     <td>Vote Count: {props.show.vote_count}</td>
                 </tr>
                 <tr>
-                    <td>Format: Movie</td>
+                    <td>Format: Show</td>
                     <td>Original Language: {props.show.original_language}</td>
                 </tr>
                 </tbody>
