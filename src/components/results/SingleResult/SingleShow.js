@@ -6,15 +6,14 @@ import Aux from '../../../hoc/Aux/Aux';
 
 
 const singleShow = ( props ) => (
-    <Aux>
-        <div 
-            className={classes.box}
-            onClick={props.resultsClickedHandler} >
-            <h1>{props.show.title}</h1>
-            <p>Type: TV Show</p>
-            <p>Streaming: {props.show.streaming_platform.join(", ")}</p>
-            </div>
-    </Aux>
+    <div
+        id={props.show.imdb}
+        className={classes.box}
+        onClick={props.resultsClickedHandler} >
+        <h1>{props.show.title}</h1>
+        <p>Type: TV Show</p>
+        <p>Streaming: {props.show.streaming_platform.join(", ")}</p>
+        </div>
 );
 
 export default singleShow;

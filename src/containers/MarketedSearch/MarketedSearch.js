@@ -19,7 +19,7 @@ class MarketedSearch extends Component {
         showsLoaded: false,
         allLoaded: false,
 
-        uniqueID: 0, // userID 
+        uniqueID: 0, // userID
         top_n_movies: [ ],
         show_this_advertisement: "netflix", //topStreamingPlatformForSearch
 
@@ -58,7 +58,7 @@ class MarketedSearch extends Component {
     componentDidMount() {
       this.renderMovies();
       this.renderShows();
-      
+
       window.addEventListener("beforeunload", this.sendPostState);
 
       let newUserID = this.createUniqueIdentifier();
@@ -81,12 +81,12 @@ class MarketedSearch extends Component {
       let updatedSearchState = {
           ...this.state.search_state
       };
-      
+
       updatedSearchState.user_query = "";
       updatedSearchState.is_search_performed = false;
 
       return updatedSearchState;
-    }   
+    }
 
     // Clears clicked_movie_state
     resetMovieState = () => {
@@ -242,6 +242,7 @@ class MarketedSearch extends Component {
     movieClickedHandler = (event) => {
 
         const newListingId = event.currentTarget.getAttribute('id');
+        console.log(event.currentTarget);
         this.renderMovieById(newListingId);
 
         let suggested_movies = this.populateTopMoviesFromSearch(2);
@@ -267,7 +268,7 @@ class MarketedSearch extends Component {
         let parsedState = this.searchOccuredParsed(false, newListingId, platforms);
 
         this.setState({
-            clicked_movie_state : updatedResult, 
+            clicked_movie_state : updatedResult,
             search_state : this.resetSearchState()
         }, this.sendPostState(parsedState));
         console.log("end movie click handler");
@@ -276,7 +277,8 @@ class MarketedSearch extends Component {
     // based on user search query, get 10 matching movies/shows to display
     populateTopMoviesFromSearch( numMatches ) {
       // matches user_query to all titles in the ALL_CONTENT array
-      let exact_matches = this.state.all_movies.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
+      let all_content_array = this.state.all_movies.concat(this.state.all_shows).sort();
+      let exact_matches = all_content_array.filter(movie => movie.title.toLowerCase().includes(this.state.search_state.user_query.toLowerCase()));
       if (exact_matches.length < numMatches ) {
         let query_array = this.state.search_state.user_query.split(" ");
         return this.getMoreMatchingTitles(exact_matches, query_array);
@@ -290,9 +292,15 @@ class MarketedSearch extends Component {
       if (exact_matches.lenght >= 10 | query_array.length === 0) {
         return exact_matches;
       } else {
+        let all_content_array = this.state.all_movies.concat(this.state.all_shows).sort();
         let join_query = query_array.join(" ");
         let just_titles = exact_matches.map(movie => movie.title);
-        let filtered_out_matches = this.state.all_movies.filter(movie => !just_titles.includes(movie.title));
+        let filtered_out_matches = all_content_array.filter(movie => !just_titles.includes(movie.title));
+
+        /*
+          TODO: Append all_shows to filtered_out_matches (currently only movies)
+        */
+
         let new_matches = filtered_out_matches.filter(movie => movie.title.toLowerCase().includes(join_query.toLowerCase()));
         // combine original matches with new matches
         let joined_array = exact_matches.concat(new_matches);
@@ -329,17 +337,45 @@ class MarketedSearch extends Component {
     }
 
     determineClickedContent() {
-      let resultObject;
+      let suggested = [];
+      let resultObject = null;
       for ( let i = 0; i < this.state.top_n_movies.length; ++i ) {
+        console.log(this.state.top_n_movies[i].imdb, this.state.clicked_movie_state.clicked_movie_id);
         if ( this.state.top_n_movies[i].imdb === this.state.clicked_movie_state.clicked_movie_id) {
           resultObject = this.state.top_n_movies[i];
+        } else {
+          suggested.push(this.state.top_n_movies[i]);
         }
       }
 
-      if ('release_date' in resultObject) {
-        return (<ClickedMovie movie={resultObject} />);
+      // making sure there are at least three recommended movies at all times, this could be better with an
+      //algorithm based on description or some other heuristic in the future 
+      let i = 0;
+      while(suggested.length < 3){
+        let currentMovie = this.state.all_movies[i];
+        if ( !(currentMovie.imdb === this.state.clicked_movie_state.clicked_movie_id)) {
+            if (currentMovie.streaming_platform.includes(this.state.clicked_movie_state.streaming_platform)){
+              suggested.push(this.state.all_movies[i]);
+            }
+          }
+          i++;
+
       }
-      return (<ClickedShow show={resultObject} />);
+
+      if ('release_date' in resultObject) {
+        return (
+        <ClickedMovie 
+          movie={resultObject} 
+          otherResults={suggested} 
+          resultsClickedHandler={this.movieClickedHandler}/>
+        );
+      }
+      return (
+        <ClickedShow 
+          show={resultObject} 
+          otherResults={suggested} 
+          resultsClickedHandler={this.movieClickedHandler} 
+      />);
     }
 
     determineConditionalRender () {
@@ -349,7 +385,7 @@ class MarketedSearch extends Component {
         return (
           <Results
             results={this.state.top_n_movies}
-            resultsClickedHandler={this.movieClickedHandler} /> 
+            resultsClickedHandler={this.movieClickedHandler} />
         );
       };
 
@@ -365,7 +401,7 @@ class MarketedSearch extends Component {
         let bottom = this.determineConditionalRender();
         return(
             <Aux>
-              <Advertisement 
+              <Advertisement
                 streamingPlatform={this.state.show_this_advertisement} />
               <SearchFunction
                 searchState={this.state.search_state.user_query}

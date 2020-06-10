@@ -2,6 +2,8 @@ import React from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import './ClickedContent.module.css';
 import classes from './ClickedContent.module.css';
+import SingleShow from '../results/SingleResult/SingleShow'
+import SingleMovie from '../results/SingleResult/SingleMovie'
 
 
 
@@ -29,10 +31,39 @@ const clickedShow = ( props ) => (
             <br></br>
             <p>Streaming Platforms: {props.show.streaming_platform.join(", ")}</p>
             <p>Production Companies: {props.show.production_companies.join(", ")}</p>
-            <br></br>
             <p>Overview: {props.show.overview}</p>
+        </div>
+        <br></br>
+        <hr></hr>
+        <div className={classes.suggested}>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            {getDisplay(props.otherResults[0], props.resultsClickedHandler)}
+                        </td>
+                        <td>
+                            {getDisplay(props.otherResults[1], props.resultsClickedHandler)}
+                        </td>
+                        <td>
+                            {getDisplay(props.otherResults[2], props.resultsClickedHandler)}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </Aux>
 );
+
+let getDisplay = (object, resultsClickedHandler) => {
+    let result;
+    console.log(object);
+    if("release_date" in object){
+        result = <SingleMovie key={Math.random()} movie={object} resultsClickedHandler={resultsClickedHandler} />;
+    } else{
+        result = <SingleShow key={Math.random()} show={object} resultsClickedHandler={resultsClickedHandler} />;
+    }
+    return(result);
+}
 
 export default clickedShow;
